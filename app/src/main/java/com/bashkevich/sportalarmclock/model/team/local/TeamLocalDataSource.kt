@@ -14,8 +14,8 @@ class TeamLocalDataSource(
         teamDao.replaceTeamsList(teams)
     }
 
-    fun observeTeamsByLeague(league: League): Flow<List<TeamWithFavouriteSignEntity>> =
-        teamDao.getAllLeagueTeams(league = league)
+    fun observeTeamsByLeagues(leagues: List<League>): Flow<List<TeamWithFavouriteSignEntity>> =
+        teamDao.getAllLeagueTeams(leagues = leagues)
 
 
     suspend fun toggleFavouriteSign(teamId: Int, isFavourite: Boolean) =

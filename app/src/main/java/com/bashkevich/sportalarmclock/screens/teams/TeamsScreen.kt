@@ -66,14 +66,15 @@ fun TeamsScreen(
         }
     ) { innerPadding ->
 
-        val nhlTeams = state.nhlTeams
+        val teams = state.teams
 
-        val mlbTeams = state.mlbTeams
+        val nhlTeams = teams.filter { it.league == League.NHL }
 
-        val nbaTeams = state.nbaTeams
+        val mlbTeams = teams.filter { it.league == League.MLB }
 
-        val nflTeams = state.nflTeams
+        val nbaTeams = teams.filter { it.league == League.NBA }
 
+        val nflTeams = teams.filter { it.league == League.NFL }
 
         LazyColumn(
             modifier = Modifier.padding(innerPadding),

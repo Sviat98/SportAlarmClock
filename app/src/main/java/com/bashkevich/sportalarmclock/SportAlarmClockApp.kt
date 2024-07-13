@@ -5,7 +5,9 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.bashkevich.sportalarmclock.di.coreModule
+import com.bashkevich.sportalarmclock.di.dateTimeModule
 import com.bashkevich.sportalarmclock.di.matchModule
+import com.bashkevich.sportalarmclock.di.settingsModule
 import com.bashkevich.sportalarmclock.di.teamModule
 import com.bashkevich.sportalarmclock.di.workerModule
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
@@ -21,7 +23,7 @@ class SportAlarmClockApp : Application() {
         super.onCreate()
         startKoin {
             androidContext(applicationContext)
-            modules(coreModule + teamModule + matchModule + workerModule)
+            modules(coreModule + teamModule + matchModule + settingsModule + workerModule + dateTimeModule)
             workManagerFactory()
         }
 

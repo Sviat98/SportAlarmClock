@@ -21,7 +21,6 @@ sealed class MatchesScreenUiEvent : UiEvent {
 @Immutable
 data class MatchesScreenState(
     val dates: List<LocalDate>,
-    val currentDate: LocalDate,
     val matches: List<Match>,
 ) : UiState {
     companion object {
@@ -29,7 +28,6 @@ data class MatchesScreenState(
 
         fun initial() = MatchesScreenState(
             dates = emptyList(),
-            currentDate = date,
             matches = emptyList()
         )
     }

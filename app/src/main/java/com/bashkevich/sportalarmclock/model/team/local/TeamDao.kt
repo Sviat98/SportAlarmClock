@@ -18,8 +18,8 @@ interface TeamDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavTeamSign(favSigns: List<FavouriteTeamEntity>)
 
-    @Query("SELECT * FROM team WHERE league = :league ORDER BY city,name")
-    fun getAllLeagueTeams(league: League): Flow<List<TeamWithFavouriteSignEntity>>
+    @Query("SELECT * FROM team WHERE league in (:leagues) ORDER BY city,name")
+    fun getAllLeagueTeams(leagues: List<League>): Flow<List<TeamWithFavouriteSignEntity>>
 
     @Query("UPDATE favourite_team SET is_favourite = :isFavourite WHERE team_id = :teamId")
     suspend fun updateFavTeamSign(teamId: Int, isFavourite: Boolean)

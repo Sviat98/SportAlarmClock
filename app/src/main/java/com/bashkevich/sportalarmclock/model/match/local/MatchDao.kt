@@ -14,14 +14,14 @@ interface MatchDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMatches(teams: List<MatchEntity>)
 
-//    @Insert(onConflict = OnConflictStrategy.IGNORE)
-//    suspend fun insertFavTeamSign(favSigns: List<FavouriteTeamEntity>)
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertFavMatchSign(favSigns: List<FavouriteMatchEntity>)
 
-    @Query("SELECT * FROM `match` WHERE date_time BETWEEN :dateBegin and :dateEnd ORDER BY date_time")
-    fun getAllMatchesByDate(dateBegin: LocalDateTime, dateEnd: LocalDateTime): Flow<List<MatchWithTeamsEntity>>
+    @Query("SELECT * FROM `match` WHERE league in (:leaguesList) and date_time BETWEEN :dateBegin and :dateEnd ORDER BY date_time")
+    fun getAllMatchesByDate(leaguesList: List<League>, dateBegin: LocalDateTime, dateEnd: LocalDateTime): Flow<List<MatchWithTeamsEntity>>
 
-//    @Query("UPDATE favourite_team SET is_favourite = :isFavourite WHERE team_id = :teamId")
-//    suspend fun updateFavTeamSign(teamId: Int, isFavourite: Boolean)
+    @Query("UPDATE favourite_match SET is_favourite = :isFavourite WHERE match_id = :matchId")
+    suspend fun updateFavMatchSign(matchId: Int, isFavourite: Boolean)
 
     @Query("DELETE FROM `match` WHERE league = :league")
     suspend fun deleteMatchesByLeague(league: League)
@@ -32,8 +32,8 @@ interface MatchDao {
 
         deleteMatchesByLeague(league)
         insertMatches(matches)
-//
-//        val teamIds = teams.map { it.id }
-//        insertFavTeamSign(teamIds.map { teamId -> FavouriteTeamEntity(teamId, false) })
+
+        val matchIds = matches.map { it.id }
+        insertFavMatchSign(matchIds.map { matchId -> FavouriteMatchEntity(matchId, false) })
     }
 }

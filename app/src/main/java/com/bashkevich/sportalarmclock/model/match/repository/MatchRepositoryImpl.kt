@@ -1,7 +1,6 @@
 package com.bashkevich.sportalarmclock.model.match.repository
 
 import com.bashkevich.sportalarmclock.model.league.League
-import com.bashkevich.sportalarmclock.model.match.domain.Match
 import com.bashkevich.sportalarmclock.model.match.domain.toDomain
 import com.bashkevich.sportalarmclock.model.match.local.MatchLocalDataSource
 import com.bashkevich.sportalarmclock.model.match.local.toMatchEntity
@@ -9,14 +8,8 @@ import com.bashkevich.sportalarmclock.model.match.remote.MatchRemoteDataSource
 import com.bashkevich.sportalarmclock.model.network.LoadResult
 import com.bashkevich.sportalarmclock.model.network.doOnSuccess
 import com.bashkevich.sportalarmclock.model.network.mapSuccess
-import com.bashkevich.sportalarmclock.model.team.domain.Team
-import com.bashkevich.sportalarmclock.model.team.domain.toDomain
-import com.bashkevich.sportalarmclock.model.team.local.toTeamEntity
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 class MatchRepositoryImpl(
@@ -25,7 +18,6 @@ class MatchRepositoryImpl(
 
 ) : MatchRepository {
 
-    private val _selectedDate = MutableStateFlow(LocalDate(1970, 1, 1))
 
     override suspend fun fetchAllMLBMatches(season: String): LoadResult<Unit, Throwable> {
 
@@ -38,15 +30,14 @@ class MatchRepositoryImpl(
         return result
     }
 
-    override fun observeMatchesByDate(date: LocalDateTime) =
-        matchLocalDataSource.observeMatchesByDate(date).map { matchEntities ->
+    override fun observeMatchesByDate(date: LocalDateTime, leaguesList: List<League>, teamsMode: TeamsMode) =
+        matchLocalDataSource.observeMatchesByDate(date,leaguesList, teamsMode).map { matchEntities ->
             matchEntities.map { it.toDomain() }
         }
 
-    override fun selectDate(date: LocalDate) {
-        _selectedDate.value = date
+    override suspend fun toggleFavouriteSign(matchId: Int, isFavourite: Boolean) {
+        matchLocalDataSource.toggleFavouriteSign(matchId = matchId, isFavourite = isFavourite)
     }
 
-    override fun observeSelectedDate(): Flow<LocalDate> = _selectedDate.asStateFlow()
 
 }

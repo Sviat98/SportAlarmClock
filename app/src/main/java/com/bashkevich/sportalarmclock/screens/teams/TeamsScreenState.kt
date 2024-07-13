@@ -8,25 +8,16 @@ import com.bashkevich.sportalarmclock.mvi.UiState
 
 @Immutable
 sealed class TeamsScreenUiEvent : UiEvent {
-    class ShowNHLTeamsList(val teams: List<Team>) : TeamsScreenUiEvent()
-    class ShowMLBTeamsList(val teams: List<Team>) : TeamsScreenUiEvent()
-    class ShowNBATeamsList(val teams: List<Team>) : TeamsScreenUiEvent()
-    class ShowNFLTeamsList(val teams: List<Team>) : TeamsScreenUiEvent()
+    class ShowTeamsList(val teams: List<Team>) : TeamsScreenUiEvent()
 }
 
 @Immutable
 data class TeamsScreenState(
-    val nhlTeams: List<Team>,
-    val mlbTeams: List<Team>,
-    val nbaTeams: List<Team>,
-    val nflTeams: List<Team>
+    val teams: List<Team>,
 ) : UiState {
     companion object {
         fun initial() = TeamsScreenState(
-            nhlTeams = emptyList(),
-            mlbTeams = emptyList(),
-            nbaTeams = emptyList(),
-            nflTeams = emptyList()
+            teams = emptyList()
         )
     }
 

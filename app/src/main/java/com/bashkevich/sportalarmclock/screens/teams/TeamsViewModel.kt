@@ -2,15 +2,20 @@ package com.bashkevich.sportalarmclock.screens.teams
 
 import androidx.lifecycle.viewModelScope
 import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import com.bashkevich.sportalarmclock.mvi.BaseViewModel
 import com.bashkevich.sportalarmclock.mvi.Reducer
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TeamsViewModel(
-    private val teamRepository: TeamRepository
+    private val teamRepository: TeamRepository,
+    private val settingsRepository: SettingsRepository
 ) : BaseViewModel<TeamsScreenState, TeamsScreenUiEvent, TeamsScreenAction>() {
 
     private val reducer = MainReducer(TeamsScreenState.initial())
@@ -21,26 +26,10 @@ class TeamsViewModel(
     init {
 
         viewModelScope.launch {
-            teamRepository.observeTeamsByLeague(League.NHL).distinctUntilChanged().collect{ teams->
-                sendEvent(TeamsScreenUiEvent.ShowNHLTeamsList(teams))
-            }
-        }
-
-        viewModelScope.launch {
-            teamRepository.observeTeamsByLeague(League.MLB).distinctUntilChanged().collect{ teams->
-                sendEvent(TeamsScreenUiEvent.ShowMLBTeamsList(teams))
-            }
-        }
-
-        viewModelScope.launch {
-            teamRepository.observeTeamsByLeague(League.NBA).distinctUntilChanged().collect{ teams->
-                sendEvent(TeamsScreenUiEvent.ShowNBATeamsList(teams))
-            }
-        }
-
-        viewModelScope.launch {
-            teamRepository.observeTeamsByLeague(League.NFL).distinctUntilChanged().collect{ teams->
-                sendEvent(TeamsScreenUiEvent.ShowNFLTeamsList(teams))
+            settingsRepository.observeLeaguesList().flatMapLatest { leagues->
+                teamRepository.observeTeamsByLeagues(leagues).distinctUntilChanged()
+            }.collect{ teams->
+                sendEvent(TeamsScreenUiEvent.ShowTeamsList(teams))
             }
         }
     }
@@ -59,17 +48,8 @@ class TeamsViewModel(
         Reducer<TeamsScreenState, TeamsScreenUiEvent>(initial) {
         override fun reduce(oldState: TeamsScreenState, event: TeamsScreenUiEvent) {
             when (event) {
-                is TeamsScreenUiEvent.ShowNHLTeamsList->{
-                    setState(oldState.copy(nhlTeams = event.teams))
-                }
-                is TeamsScreenUiEvent.ShowMLBTeamsList->{
-                    setState(oldState.copy(mlbTeams = event.teams))
-                }
-                is TeamsScreenUiEvent.ShowNBATeamsList->{
-                    setState(oldState.copy(nbaTeams = event.teams))
-                }
-                is TeamsScreenUiEvent.ShowNFLTeamsList->{
-                    setState(oldState.copy(nflTeams = event.teams))
+                is TeamsScreenUiEvent.ShowTeamsList->{
+                    setState(oldState.copy(teams = event.teams))
                 }
                 else -> {}
             }

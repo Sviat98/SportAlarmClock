@@ -9,13 +9,8 @@ import com.bashkevich.sportalarmclock.model.team.domain.toDomain
 import com.bashkevich.sportalarmclock.model.team.local.TeamLocalDataSource
 import com.bashkevich.sportalarmclock.model.team.local.toTeamEntity
 import com.bashkevich.sportalarmclock.model.team.remote.TeamRemoteDataSource
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class TeamRepositoryImpl(
     private val teamRemoteDataSource: TeamRemoteDataSource,
@@ -33,8 +28,8 @@ class TeamRepositoryImpl(
         return result
     }
 
-    override fun observeTeamsByLeague(league: League): Flow<List<Team>> =
-        teamLocalDataSource.observeTeamsByLeague(league).map { it.map { it.toDomain() } }
+    override fun observeTeamsByLeagues(leagues: List<League>): Flow<List<Team>> =
+        teamLocalDataSource.observeTeamsByLeagues(leagues).map { it.map { it.toDomain() } }
 
     override suspend fun fetchAllMLBTeams() : LoadResult<List<Team>,Throwable> {
 

@@ -1,20 +1,17 @@
 package com.bashkevich.sportalarmclock.screens.matches
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
+import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepository
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
+import com.bashkevich.sportalarmclock.model.quadruple.Quadruple
+import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
 import com.bashkevich.sportalarmclock.mvi.BaseViewModel
 import com.bashkevich.sportalarmclock.mvi.Reducer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -28,7 +25,8 @@ import kotlinx.datetime.toLocalDateTime
 @OptIn(ExperimentalCoroutinesApi::class)
 class MatchesViewModel(
     private val matchRepository: MatchRepository,
-    private val appContext: Context
+    private val dateTimeRepository: DateTimeRepository,
+    private val settingsRepository: SettingsRepository
 ) : BaseViewModel<MatchesScreenState, MatchesScreenUiEvent, MatchesScreenAction>() {
 
     private val reducer = MainReducer(MatchesScreenState.initial())
@@ -39,7 +37,7 @@ class MatchesViewModel(
     init {
 
         viewModelScope.launch {
-            getTimeZoneFlow().collect { timeZone ->
+            dateTimeRepository.observeCurrentTimeZone().collect { timeZone ->
 
                 val today =
                     Clock.System.now().toLocalDateTime(timeZone).date
@@ -55,40 +53,30 @@ class MatchesViewModel(
 
         viewModelScope.launch {
             combine(
-                getTimeZoneFlow(),
-                matchRepository.observeSelectedDate()
-            ) { timeZone, currentDate ->
-                Pair(currentDate, timeZone)
+                dateTimeRepository.observeCurrentTimeZone(),
+                dateTimeRepository.observeSelectedDate(),
+                settingsRepository.observeTeamsMode(),
+                settingsRepository.observeLeaguesList()
+            ) { timeZone, currentDate, teamsMode, leagueList ->
+                Quadruple(currentDate, timeZone, teamsMode, leagueList)
             }.flatMapLatest {
 
                 val timeZone = it.second
                 val currentDate = it.first
 
+                val teamsMode = it.third
+
+                val leaguesList = it.fourth
+
                 val dateAtLocalMidnight = currentDate.atStartOfDayIn(timeZone).toLocalDateTime(
                     TimeZone.of(AMERICAN_TIME_ZONE)
                 )
 
-                matchRepository.observeMatchesByDate(dateAtLocalMidnight)
-            }.collect{matches->
+                matchRepository.observeMatchesByDate(dateAtLocalMidnight,leaguesList, teamsMode)
+                    .distinctUntilChanged()
+            }.collect { matches ->
                 sendEvent(MatchesScreenUiEvent.ShowMatchesList(matches = matches))
             }
-        }
-    }
-
-    private fun getTimeZoneFlow() = callbackFlow {
-        trySend(TimeZone.currentSystemDefault())
-        val receiver = object : BroadcastReceiver() {
-            override fun onReceive(context: Context?, intent: Intent) {
-                if (intent.action == Intent.ACTION_TIMEZONE_CHANGED) {
-                    trySend(TimeZone.currentSystemDefault())
-                }
-            }
-        }
-
-        appContext.registerReceiver(receiver, IntentFilter(Intent.ACTION_TIMEZONE_CHANGED))
-
-        awaitClose {
-            appContext.unregisterReceiver(receiver)
         }
     }
 
@@ -96,8 +84,14 @@ class MatchesViewModel(
         reducer.sendEvent(event)
     }
 
+    fun checkFavourite(matchId: Int, isFavourite: Boolean) {
+        viewModelScope.launch {
+            matchRepository.toggleFavouriteSign(matchId = matchId, isFavourite = isFavourite)
+        }
+    }
+
     fun selectDate(currentTab: LocalDate) {
-        matchRepository.selectDate(currentTab)
+        dateTimeRepository.selectDate(currentTab)
     }
 
     private class MainReducer(initial: MatchesScreenState) :

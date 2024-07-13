@@ -18,6 +18,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -73,6 +74,7 @@ fun MatchesScreen(
     modifier: Modifier = Modifier,
     viewModel: MatchesViewModel,
     onTeamsScreenClick: () -> Unit,
+    onSettingsScreenClick: () -> Unit,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -93,6 +95,9 @@ fun MatchesScreen(
             TopAppBar(title = { }, actions = {
                 IconButton(onClick = { onTeamsScreenClick() }) {
                     Icon(Icons.Outlined.Star, contentDescription = "Go to teams list")
+                }
+                IconButton(onClick = { onSettingsScreenClick() }) {
+                    Icon(Icons.Outlined.Settings, contentDescription = "Go to settings")
                 }
             })
         }
@@ -122,7 +127,7 @@ fun MatchesScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(text = currentTab.dayOfWeek.toString().substring(0,3))
+                                Text(text = currentTab.dayOfWeek.toString().substring(0, 3))
                                 Text(
                                     text = "${
                                         currentTab.dayOfMonth.toString().padStart(2, '0')
@@ -148,7 +153,14 @@ fun MatchesScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(matches) { match ->
-                        MatchItem(match = match)
+                        MatchItem(
+                            match = match,
+                            onToggleFavouriteSign = { isFavourite ->
+                                viewModel.checkFavourite(
+                                    matchId = match.id,
+                                    isFavourite = isFavourite
+                                )
+                            })
                     }
                 }
             }
@@ -161,7 +173,8 @@ fun MatchesScreen(
 @Composable
 fun MatchItem(
     modifier: Modifier = Modifier,
-    match: Match
+    match: Match,
+    onToggleFavouriteSign: (Boolean) -> Unit = {}
 ) {
     Card(
         modifier = modifier,
@@ -187,7 +200,10 @@ fun MatchItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = "${match.dateTime.time}")
-                Switch(checked = match.isChecked, onCheckedChange = {})
+                Switch(
+                    checked = match.isChecked,
+                    onCheckedChange = onToggleFavouriteSign
+                )
             }
         }
 

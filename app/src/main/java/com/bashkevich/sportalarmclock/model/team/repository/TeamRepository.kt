@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 interface TeamRepository {
     suspend fun fetchAllNHLTeams(): LoadResult<List<Team>, Throwable>
     suspend fun fetchAllMLBTeams(): LoadResult<List<Team>, Throwable>
-    fun observeTeamsByLeague(league: League): Flow<List<Team>>
+    fun observeTeamsByLeagues(leagues: List<League>): Flow<List<Team>>
     suspend fun toggleFavouriteSign(teamId: Int, isFavourite: Boolean)
     suspend fun fetchAllNBATeams(): LoadResult<List<Team>, Throwable>
     suspend fun fetchAllNFLTeams(): LoadResult<List<Team>, Throwable>

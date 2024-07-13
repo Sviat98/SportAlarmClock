@@ -2,18 +2,25 @@ package com.bashkevich.sportalarmclock.di
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.RoomDatabase
 import com.bashkevich.sportalarmclock.model.database.SportDatabase
+import com.bashkevich.sportalarmclock.model.datastore.SportDatastore
+import com.bashkevich.sportalarmclock.model.datetime.local.DateTimeLocalDataSource
+import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepository
+import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepositoryImpl
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepositoryImpl
 import com.bashkevich.sportalarmclock.model.match.local.MatchLocalDataSource
 import com.bashkevich.sportalarmclock.model.match.remote.MatchRemoteDataSource
+import com.bashkevich.sportalarmclock.model.settings.local.SettingsLocalDataSource
+import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
+import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepositoryImpl
 import com.bashkevich.sportalarmclock.model.team.local.TeamLocalDataSource
 import com.bashkevich.sportalarmclock.model.team.remote.TeamRemoteDataSource
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepositoryImpl
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
 import com.bashkevich.sportalarmclock.screens.matches.MatchesViewModel
+import com.bashkevich.sportalarmclock.screens.settings.SettingsViewModel
 import com.bashkevich.sportalarmclock.screens.teams.TeamsViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.android.Android
@@ -81,6 +88,11 @@ val coreModule = module {
 
         sportDatabase.getMatchDao()
     }
+    single {
+        val appContext: Context = get()
+
+        SportDatastore(appContext)
+    }
 }
 
 val workerModule = module {
@@ -104,4 +116,19 @@ val matchModule = module {
         bind<MatchRepository>()
     }
     viewModelOf(::MatchesViewModel)
+}
+
+val settingsModule = module {
+    singleOf(::SettingsLocalDataSource)
+    singleOf(::SettingsRepositoryImpl) {
+        bind<SettingsRepository>()
+    }
+    viewModelOf(::SettingsViewModel)
+}
+
+val dateTimeModule = module {
+    singleOf(::DateTimeLocalDataSource)
+    singleOf(::DateTimeRepositoryImpl) {
+        bind<DateTimeRepository>()
+    }
 }

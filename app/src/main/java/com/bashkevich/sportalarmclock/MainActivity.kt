@@ -12,6 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.bashkevich.sportalarmclock.screens.matches.MatchesScreen
 import com.bashkevich.sportalarmclock.screens.matches.MatchesViewModel
+import com.bashkevich.sportalarmclock.screens.settings.SettingsScreen
+import com.bashkevich.sportalarmclock.screens.settings.SettingsViewModel
 import com.bashkevich.sportalarmclock.screens.teams.TeamsScreen
 import com.bashkevich.sportalarmclock.screens.teams.TeamsViewModel
 import com.bashkevich.sportalarmclock.ui.theme.SportAlarmClockTheme
@@ -46,12 +48,17 @@ fun SportAlarmClockHavHost(modifier: Modifier = Modifier) {
 
             MatchesScreen(viewModel = viewModel, onTeamsScreenClick = {
                 navController.navigate(route = Screens.Teams.route)
-            })
+            }, onSettingsScreenClick = { navController.navigate(route = Screens.Settings.route) })
         }
         composable(route = Screens.Teams.route) {
             val viewModel = koinViewModel<TeamsViewModel>()
 
             TeamsScreen(viewModel = viewModel, onBack = { navController.navigateUp() })
+        }
+        composable(route = Screens.Settings.route) {
+            val viewModel = koinViewModel<SettingsViewModel>()
+
+            SettingsScreen(viewModel = viewModel, onBack = { navController.navigateUp() })
         }
     }
 }
@@ -61,6 +68,6 @@ sealed class Screens(
     val route: String,
 ) {
     data object Matches : Screens("matches")
-
     data object Teams : Screens("teams")
+    data object Settings : Screens("settings")
 }

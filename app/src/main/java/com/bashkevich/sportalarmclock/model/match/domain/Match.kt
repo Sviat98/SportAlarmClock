@@ -2,7 +2,6 @@ package com.bashkevich.sportalarmclock.model.match.domain
 
 import com.bashkevich.sportalarmclock.model.datetime.convertFromAmericanTimeZone
 import com.bashkevich.sportalarmclock.model.league.League
-import com.bashkevich.sportalarmclock.model.match.local.MatchEntity
 import com.bashkevich.sportalarmclock.model.match.local.MatchWithTeamsEntity
 import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.model.team.domain.toDomain
@@ -18,12 +17,12 @@ data class Match(
 )
 
 fun MatchWithTeamsEntity.toDomain() = Match(
-    id = matchEntity.id,
-    league = matchEntity.league,
+    id = matchWithFavouriteSignEntity.matchEntity.id,
+    league = matchWithFavouriteSignEntity.matchEntity.league,
     homeTeam = homeTeamEntity.toDomain(),
     awayTeam = awayTeamEntity.toDomain(),
-    dateTime = matchEntity.dateTime.convertFromAmericanTimeZone(),
-    isChecked = false
+    dateTime = matchWithFavouriteSignEntity.matchEntity.dateTime.convertFromAmericanTimeZone(),
+    isChecked = matchWithFavouriteSignEntity.favouriteMatchEntity.isFavourite
 )
 
 
