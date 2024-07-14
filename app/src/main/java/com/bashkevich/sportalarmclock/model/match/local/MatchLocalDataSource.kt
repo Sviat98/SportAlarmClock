@@ -19,8 +19,8 @@ import kotlinx.datetime.toLocalDateTime
 class MatchLocalDataSource(
     private val matchDao: MatchDao
 ) {
-    suspend fun replaceMatchesList(matches: List<MatchEntity>) = withContext(Dispatchers.IO) {
-        matchDao.replaceMatchesList(matches)
+    suspend fun replaceMatchesList(matches: List<MatchEntity>,league: League) = withContext(Dispatchers.IO) {
+            matchDao.replaceMatchesList(matches,league)
     }
 
     fun observeMatchesByDate(date: LocalDateTime,leaguesList: List<League>, teamsMode: TeamsMode): Flow<List<MatchWithTeamsEntity>> {

@@ -5,15 +5,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class MatchDto(
+data class NFLMatchDto(
     @SerialName(value = "GameID")
-    val id: Int,
+    val id: Int?,
     @SerialName(value = "HomeTeamID")
-    val homeTeamId: Int,
+    val homeTeamId: Int?,
     @SerialName(value = "AwayTeamID")
-    val awayTeamId: Int,
+    val awayTeamId: Int?,
     @SerialName(value = "DateTime")
     val dateTime: LocalDateTime?,
     @SerialName(value = "Status")
-    val status: String
+    val status: String?
 )

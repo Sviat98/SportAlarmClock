@@ -1,8 +1,8 @@
 package com.bashkevich.sportalarmclock.screens.teams
 
 import androidx.lifecycle.viewModelScope
-import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
+import com.bashkevich.sportalarmclock.model.season.repository.SeasonRepository
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import com.bashkevich.sportalarmclock.mvi.BaseViewModel
 import com.bashkevich.sportalarmclock.mvi.Reducer

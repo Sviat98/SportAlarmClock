@@ -15,6 +15,9 @@ import com.bashkevich.sportalarmclock.model.settings.local.SettingsLocalDataSour
 import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
 import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepositoryImpl
 import com.bashkevich.sportalarmclock.model.team.local.TeamLocalDataSource
+import com.bashkevich.sportalarmclock.model.season.remote.SeasonRemoteDataSource
+import com.bashkevich.sportalarmclock.model.season.repository.SeasonRepository
+import com.bashkevich.sportalarmclock.model.season.repository.SeasonRepositoryImpl
 import com.bashkevich.sportalarmclock.model.team.remote.TeamRemoteDataSource
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepositoryImpl
@@ -116,6 +119,13 @@ val matchModule = module {
         bind<MatchRepository>()
     }
     viewModelOf(::MatchesViewModel)
+}
+
+val seasonModule = module {
+    singleOf(::SeasonRemoteDataSource)
+    singleOf(::SeasonRepositoryImpl) {
+        bind<SeasonRepository>()
+    }
 }
 
 val settingsModule = module {

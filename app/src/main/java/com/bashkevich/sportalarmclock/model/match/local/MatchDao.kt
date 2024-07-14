@@ -27,9 +27,7 @@ interface MatchDao {
     suspend fun deleteMatchesByLeague(league: League)
 
     @Transaction
-    suspend fun replaceMatchesList(matches: List<MatchEntity>) {
-        val league = matches[0].league
-
+    suspend fun replaceMatchesList(matches: List<MatchEntity>,league: League) {
         deleteMatchesByLeague(league)
         insertMatches(matches)
 

@@ -10,7 +10,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 interface MatchRepository {
+    suspend fun fetchAllNHLMatches(season: String): LoadResult<Unit, Throwable>
     suspend fun fetchAllMLBMatches(season: String): LoadResult<Unit, Throwable>
+    suspend fun fetchAllNBAMatches(season: String): LoadResult<Unit, Throwable>
+    suspend fun fetchAllNFLMatches(season: String): LoadResult<Unit, Throwable>
+
     fun observeMatchesByDate(date: LocalDateTime,leaguesList: List<League>, teamsMode: TeamsMode): Flow<List<Match>>
     suspend fun toggleFavouriteSign(matchId: Int, isFavourite: Boolean)
 

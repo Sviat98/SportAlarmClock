@@ -18,20 +18,69 @@ import kotlinx.coroutines.withContext
 class MatchRemoteDataSource(
     private val httpClient: HttpClient
 ) {
-    suspend fun fetchMLBMatches(season: String): LoadResult<List<MatchDto>, Throwable> = withContext(Dispatchers.IO){
-        runOperationCatching {
-            val matchList = httpClient.get{
-                contentType(ContentType.Application.Json)
-                url {
-                    protocol = URLProtocol.HTTPS
-                    host = NetworkUtils.MLB_BASE_URL
-                    encodedPath = "/SchedulesBasic/$season"
-                }
-                parameter("key", BuildConfig.MLB_API_KEY)
-            }.body<List<MatchDto>>()
-            matchList
+    suspend fun fetchNHLMatches(season: String): LoadResult<List<MatchDto>, Throwable> =
+        withContext(Dispatchers.IO) {
+            runOperationCatching {
+                val matchList = httpClient.get {
+                    contentType(ContentType.Application.Json)
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        host = NetworkUtils.NHL_BASE_URL
+                        encodedPath = "/SchedulesBasic/$season"
+                    }
+                    parameter("key", BuildConfig.NHL_API_KEY)
+                }.body<List<MatchDto>>()
+                matchList
+            }
         }
-    }
+
+    suspend fun fetchMLBMatches(season: String): LoadResult<List<MatchDto>, Throwable> =
+        withContext(Dispatchers.IO) {
+            runOperationCatching {
+                val matchList = httpClient.get {
+                    contentType(ContentType.Application.Json)
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        host = NetworkUtils.MLB_BASE_URL
+                        encodedPath = "/SchedulesBasic/$season"
+                    }
+                    parameter("key", BuildConfig.MLB_API_KEY)
+                }.body<List<MatchDto>>()
+                matchList
+            }
+        }
+
+    suspend fun fetchNBAMatches(season: String): LoadResult<List<MatchDto>, Throwable> =
+        withContext(Dispatchers.IO) {
+            runOperationCatching {
+                val matchList = httpClient.get {
+                    contentType(ContentType.Application.Json)
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        host = NetworkUtils.NBA_BASE_URL
+                        encodedPath = "/SchedulesBasic/$season"
+                    }
+                    parameter("key", BuildConfig.NBA_API_KEY)
+                }.body<List<MatchDto>>()
+                matchList
+            }
+        }
+
+    suspend fun fetchNFLMatches(season: String): LoadResult<List<NFLMatchDto>, Throwable> =
+        withContext(Dispatchers.IO) {
+            runOperationCatching {
+                val matchList = httpClient.get {
+                    contentType(ContentType.Application.Json)
+                    url {
+                        protocol = URLProtocol.HTTPS
+                        host = NetworkUtils.NFL_BASE_URL
+                        encodedPath = "/SchedulesBasic/$season"
+                    }
+                    parameter("key", BuildConfig.NFL_API_KEY)
+                }.body<List<NFLMatchDto>>()
+                matchList
+            }
+        }
 
 
 }

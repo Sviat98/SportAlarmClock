@@ -5,8 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.match.remote.MatchDto
-import com.bashkevich.sportalarmclock.model.team.local.TeamEntity
-import com.bashkevich.sportalarmclock.model.team.remote.TeamDto
+import com.bashkevich.sportalarmclock.model.match.remote.NFLMatchDto
 import kotlinx.datetime.LocalDateTime
 
 @Entity(tableName = "match")
@@ -30,6 +29,14 @@ fun MatchDto.toMatchEntity(league: League) = MatchEntity(
     homeTeamId = homeTeamId.countGlobalId(league),
     awayTeamId = awayTeamId.countGlobalId(league),
     dateTime = dateTime!!
+)
+
+fun NFLMatchDto.toMatchEntity(league: League) = MatchEntity(
+    id = id?.countGlobalId(league) ?: 0,
+    league = league,
+    homeTeamId = homeTeamId?.countGlobalId(league)?:0,
+    awayTeamId = awayTeamId?.countGlobalId(league)?:0,
+    dateTime = dateTime ?: LocalDateTime(1970,1,1,0,0,0)
 )
 
 private fun Int.countGlobalId(league: League) =
