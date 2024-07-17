@@ -25,7 +25,7 @@ class TeamRemoteDataSource(
                 url {
                     protocol = URLProtocol.HTTPS
                     host = NetworkUtils.NHL_BASE_URL
-                    encodedPath = "/Teams"
+                    encodedPath = "/AllTeams"
                 }
                 parameter("key", BuildConfig.NHL_API_KEY)
             }.body<List<TeamDto>>()
@@ -40,7 +40,7 @@ class TeamRemoteDataSource(
                 url {
                     protocol = URLProtocol.HTTPS
                     host = NetworkUtils.MLB_BASE_URL
-                    encodedPath = "/Teams"
+                    encodedPath = "/AllTeams"
                 }
                 parameter("key",BuildConfig.MLB_API_KEY)
             }.body<List<TeamDto>>()
@@ -55,7 +55,7 @@ class TeamRemoteDataSource(
                 url {
                     protocol = URLProtocol.HTTPS
                     host = NetworkUtils.NBA_BASE_URL
-                    encodedPath = "/Teams"
+                    encodedPath = "/AllTeams"
                 }
                 parameter("key",BuildConfig.NBA_API_KEY)
             }.body<List<TeamDto>>()
@@ -64,17 +64,17 @@ class TeamRemoteDataSource(
     }
 
 
-    suspend fun fetchNFLTeams(): LoadResult<List<TeamDto>,Throwable> = withContext(Dispatchers.IO){
+    suspend fun fetchNFLTeams(): LoadResult<List<NFLTeamDto>,Throwable> = withContext(Dispatchers.IO){
         runOperationCatching {
             val teamsList = httpClient.get{
                 contentType(ContentType.Application.Json)
                 url {
                     protocol = URLProtocol.HTTPS
                     host = NetworkUtils.NFL_BASE_URL
-                    encodedPath = "/Teams"
+                    encodedPath = "/AllTeams"
                 }
                 parameter("key",BuildConfig.NFL_API_KEY)
-            }.body<List<TeamDto>>()
+            }.body<List<NFLTeamDto>>()
             teamsList
         }
     }

@@ -4,15 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TeamDto(
+data class NFLTeamDto(
     @SerialName(value = "GlobalTeamID")
     val id: Int,
-    @SerialName(value = "Active")
-    val isActive: Boolean,
     @SerialName(value = "City")
     val city: String,
     @SerialName(value = "Name")
     val name: String,
+    @SerialName(value = "StadiumID")
+    val stadiumId: Int?,
     @SerialName(value = "WikipediaLogoUrl")
     val logoUrl: String?,
     @SerialName(value = "WikipediaWordMarkUrl")

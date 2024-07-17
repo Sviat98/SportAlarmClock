@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.match.remote.MatchDto
 import com.bashkevich.sportalarmclock.model.match.remote.NFLMatchDto
+import com.bashkevich.sportalarmclock.model.season.SeasonType
 import kotlinx.datetime.LocalDateTime
 
 @Entity(tableName = "match")
@@ -15,6 +16,10 @@ data class MatchEntity(
     val id: Int,
     @ColumnInfo(name = "league")
     val league: League,
+    @ColumnInfo(name = "season")
+    val season: Int,
+    @ColumnInfo(name = "season_type")
+    val seasonType: SeasonType,
     @ColumnInfo(name = "home_team_id")
     val homeTeamId: Int,
     @ColumnInfo(name = "away_team_id")
@@ -23,20 +28,24 @@ data class MatchEntity(
     val dateTime: LocalDateTime
 )
 
-fun MatchDto.toMatchEntity(league: League) = MatchEntity(
+fun MatchDto.toMatchEntity(league: League, season: Int, seasonType: SeasonType) = MatchEntity(
     id = id.countGlobalId(league),
     league = league,
+    season = season,
+    seasonType = seasonType,
     homeTeamId = homeTeamId.countGlobalId(league),
     awayTeamId = awayTeamId.countGlobalId(league),
     dateTime = dateTime!!
 )
 
-fun NFLMatchDto.toMatchEntity(league: League) = MatchEntity(
+fun NFLMatchDto.toMatchEntity(league: League, season: Int, seasonType: SeasonType) = MatchEntity(
     id = id?.countGlobalId(league) ?: 0,
     league = league,
-    homeTeamId = homeTeamId?.countGlobalId(league)?:0,
-    awayTeamId = awayTeamId?.countGlobalId(league)?:0,
-    dateTime = dateTime ?: LocalDateTime(1970,1,1,0,0,0)
+    season = season,
+    seasonType = seasonType,
+    homeTeamId = homeTeamId?.countGlobalId(league) ?: 0,
+    awayTeamId = awayTeamId?.countGlobalId(league) ?: 0,
+    dateTime = dateTime ?: LocalDateTime(1970, 1, 1, 0, 0, 0)
 )
 
 private fun Int.countGlobalId(league: League) =

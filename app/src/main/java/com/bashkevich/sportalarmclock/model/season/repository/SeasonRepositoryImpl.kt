@@ -4,6 +4,7 @@ import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.network.LoadResult
 import com.bashkevich.sportalarmclock.model.network.doOnSuccess
 import com.bashkevich.sportalarmclock.model.network.mapSuccess
+import com.bashkevich.sportalarmclock.model.season.remote.NFLSeasonDto
 import com.bashkevich.sportalarmclock.model.season.remote.SeasonDto
 import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.model.team.domain.toDomain
@@ -27,7 +28,7 @@ class SeasonRepositoryImpl(
     override suspend fun fetchNBACurrentSeason(): LoadResult<SeasonDto, Throwable> =
         seasonRemoteDataSource.fetchNBACurrentSeason()
 
-    override suspend fun fetchNFLCurrentSeason(): LoadResult<SeasonDto, Throwable> =
+    override suspend fun fetchNFLCurrentSeason(): LoadResult<NFLSeasonDto, Throwable> =
         seasonRemoteDataSource.fetchNFLCurrentSeason()
 
 }

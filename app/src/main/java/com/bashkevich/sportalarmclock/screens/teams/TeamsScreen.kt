@@ -205,7 +205,7 @@ private fun TeamItem(
 
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        //elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         border = BorderStroke(width = 2.dp, color = Color.Black)
     ) {
         Row(

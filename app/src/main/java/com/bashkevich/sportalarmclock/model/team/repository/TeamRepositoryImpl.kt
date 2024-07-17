@@ -54,7 +54,7 @@ class TeamRepositoryImpl(
     override suspend fun fetchAllNFLTeams() : LoadResult<List<Team>,Throwable> {
 
         val result =   teamRemoteDataSource.fetchNFLTeams()
-            .mapSuccess { teams -> teams.map { it.toTeamEntity(League.NFL) } }
+            .mapSuccess { teams -> teams.map { it.toTeamEntity() } }
             .doOnSuccess { teams ->
                 teamLocalDataSource.replaceTeamsList(teams)
             }.mapSuccess { teams-> teams.map { it.toDomain() } }

@@ -64,7 +64,7 @@ class SeasonRemoteDataSource(
     }
 
 
-    suspend fun fetchNFLCurrentSeason(): LoadResult<SeasonDto,Throwable> = withContext(Dispatchers.IO){
+    suspend fun fetchNFLCurrentSeason(): LoadResult<NFLSeasonDto,Throwable> = withContext(Dispatchers.IO){
         runOperationCatching {
             val currentSeasonList = httpClient.get{
                 contentType(ContentType.Application.Json)
@@ -74,7 +74,7 @@ class SeasonRemoteDataSource(
                     encodedPath = "/Timeframes/current"
                 }
                 parameter("key",BuildConfig.NFL_API_KEY)
-            }.body<List<SeasonDto>>()
+            }.body<List<NFLSeasonDto>>()
             currentSeasonList.first()
         }
     }

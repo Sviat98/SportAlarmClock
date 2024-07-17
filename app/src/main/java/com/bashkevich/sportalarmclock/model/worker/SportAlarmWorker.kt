@@ -4,8 +4,12 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.bashkevich.sportalarmclock.model.database.SportDatabase
+import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
 import com.bashkevich.sportalarmclock.model.network.LoadResult
+import com.bashkevich.sportalarmclock.model.season.SeasonType
+import com.bashkevich.sportalarmclock.model.season.remote.NFLSeasonDto
 import com.bashkevich.sportalarmclock.model.season.remote.SeasonDto
 import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.model.season.repository.SeasonRepository
@@ -13,11 +17,14 @@ import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class SportAlarmWorker(
     private val seasonRepository: SeasonRepository,
     private val teamRepository: TeamRepository,
     private val matchRepository: MatchRepository,
+    private val db: SportDatabase,
     appContext: Context,
     private val params: WorkerParameters
 ) :
@@ -31,6 +38,8 @@ class SportAlarmWorker(
 
         var isSuccess = false
 
+
+
         var nhlTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
         var mlbTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
         var nbaTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
@@ -39,7 +48,7 @@ class SportAlarmWorker(
         var nhlSeasonAsync: Deferred<LoadResult<SeasonDto, Throwable>>
         var mlbSeasonAsync: Deferred<LoadResult<SeasonDto, Throwable>>
         var nbaSeasonAsync: Deferred<LoadResult<SeasonDto, Throwable>>
-        var nflSeasonAsync: Deferred<LoadResult<SeasonDto, Throwable>>
+        var nflSeasonAsync: Deferred<LoadResult<NFLSeasonDto, Throwable>>
 
         var nhlMatchesAsync: Deferred<LoadResult<Unit, Throwable>>? = null
         var mlbMatchesAsync: Deferred<LoadResult<Unit, Throwable>>? = null
@@ -49,6 +58,12 @@ class SportAlarmWorker(
         Log.d(WORK_NAME, "START")
 
         coroutineScope {
+//            db.runInTransaction{
+//                runBlocking {
+//                    db.clearAllTables()
+//                }
+//            }
+
             nhlSeasonAsync = async {
                 seasonRepository.fetchNHLCurrentSeason()
             }
@@ -110,33 +125,259 @@ class SportAlarmWorker(
 
         Log.d(WORK_NAME, "nflSeasonResult $nflSeasonResult")
 
+        matchRepository.removeOldMatches(
+            league = League.MLB,
+            season = 2024,
+            seasonTypes = emptyList()
+        )
+
+        Log.d(WORK_NAME, "removeOldMatches empty list filter done")
 
         coroutineScope {
             if (nhlSeasonResult is LoadResult.Success) {
-                nhlMatchesAsync = async {
-                    matchRepository.fetchAllNHLMatches(nhlSeasonResult.result.apiSeason)
-                    //matchRepository.fetchAllNHLMatches("2024")
+                val season = nhlSeasonResult.result.season
+                val seasonType = nhlSeasonResult.result.seasonType
+
+                coroutineScope {
+                    nhlMatchesAsync = async {
+                        matchRepository.fetchAllNHLMatches(season = season, seasonType = seasonType)
+                    }
+
+                    var seasonTypesToRemove = emptyList<SeasonType>()
+                    if (seasonType == SeasonType.PRE) {
+
+                        launch {
+                            matchRepository.fetchAllNHLMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.STAR) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllNHLMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.REG) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllNHLMatches(
+                                season = season,
+                                seasonType = SeasonType.STAR
+                            )
+                        }
+                        launch {
+                            matchRepository.fetchAllNHLMatches(
+                                season = season,
+                                seasonType = SeasonType.POST
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.POST) {
+                        seasonTypesToRemove =
+                            listOf(SeasonType.PRE, SeasonType.REG, SeasonType.STAR)
+                    }
+
+
+                    matchRepository.removeOldMatches(
+                        league = League.NHL,
+                        season = season,
+                        seasonTypes = seasonTypesToRemove
+                    )
+
                 }
             }
 
             if (mlbSeasonResult is LoadResult.Success) {
-                mlbMatchesAsync = async {
-                    matchRepository.fetchAllMLBMatches(mlbSeasonResult.result.apiSeason)
+                val season = mlbSeasonResult.result.season
+                val seasonType = mlbSeasonResult.result.seasonType
+
+                coroutineScope {
+                    mlbMatchesAsync = async {
+                        matchRepository.fetchAllMLBMatches(season = season, seasonType = seasonType)
+                    }
+
+                    var seasonTypesToRemove = emptyList<SeasonType>()
+
+                    if (seasonType == SeasonType.PRE) {
+                        launch {
+                            matchRepository.fetchAllMLBMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.STAR) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllMLBMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.REG) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+
+                        launch {
+                            matchRepository.fetchAllMLBMatches(
+                                season = season,
+                                seasonType = SeasonType.STAR
+                            )
+                        }
+                        launch {
+                            matchRepository.fetchAllMLBMatches(
+                                season = season,
+                                seasonType = SeasonType.POST
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.POST) {
+                        seasonTypesToRemove =
+                            listOf(SeasonType.PRE, SeasonType.REG, SeasonType.STAR)
+                    }
+
+                    matchRepository.removeOldMatches(
+                        league = League.MLB,
+                        season = season,
+                        seasonTypes = seasonTypesToRemove
+                    )
                 }
+
             }
 
             if (nbaSeasonResult is LoadResult.Success) {
-                nbaMatchesAsync = async {
-                    matchRepository.fetchAllNBAMatches(nbaSeasonResult.result.apiSeason)
-                    //matchRepository.fetchAllNBAMatches("2024")
+
+                val season = nbaSeasonResult.result.season
+                val seasonType = nbaSeasonResult.result.seasonType
+
+                coroutineScope {
+                    nbaMatchesAsync = async {
+                        matchRepository.fetchAllNBAMatches(season = season, seasonType = seasonType)
+                    }
+
+                    var seasonTypesToRemove = emptyList<SeasonType>()
+
+
+                    if (seasonType == SeasonType.PRE) {
+                        launch {
+                            matchRepository.fetchAllNBAMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.STAR) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllNBAMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.REG) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllNBAMatches(
+                                season = season,
+                                seasonType = SeasonType.STAR
+                            )
+                        }
+                        launch {
+                            matchRepository.fetchAllNBAMatches(
+                                season = season,
+                                seasonType = SeasonType.POST
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.POST) {
+                        seasonTypesToRemove =
+                            listOf(SeasonType.PRE, SeasonType.REG, SeasonType.STAR)
+                    }
+
+                    matchRepository.removeOldMatches(
+                        league = League.NBA,
+                        season = season,
+                        seasonTypes = seasonTypesToRemove
+                    )
+
                 }
             }
 
             if (nflSeasonResult is LoadResult.Success) {
-                nflMatchesAsync = async {
-                    matchRepository.fetchAllNFLMatches(nflSeasonResult.result.apiSeason)
-                    //matchRepository.fetchAllNFLMatches("2024")
+                val season = nflSeasonResult.result.season
+                val seasonType = SeasonType.valueOf(nflSeasonResult.result.apiSeason.substring(4))
+
+                coroutineScope {
+
+                    nflMatchesAsync = async {
+                        matchRepository.fetchAllNFLMatches(season = season, seasonType = seasonType)
+                    }
+
+                    var seasonTypesToRemove = emptyList<SeasonType>()
+
+                    if (seasonType == SeasonType.PRE) {
+                        launch {
+                            matchRepository.fetchAllNFLMatches(
+                                season = season,
+                                seasonType = SeasonType.REG
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.REG) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE)
+                        launch {
+                            matchRepository.fetchAllNFLMatches(
+                                season = season,
+                                seasonType = SeasonType.POST
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.STAR) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE, SeasonType.REG)
+                        launch {
+                            matchRepository.fetchAllNFLMatches(
+                                season = season,
+                                seasonType = SeasonType.POST
+                            )
+                        }
+                    }
+
+                    if (seasonType == SeasonType.POST) {
+                        seasonTypesToRemove = listOf(SeasonType.PRE, SeasonType.REG)
+                        launch {
+                            matchRepository.fetchAllNFLMatches(
+                                season = season,
+                                seasonType = SeasonType.STAR
+                            )
+                        }
+                    }
+
+                    matchRepository.removeOldMatches(
+                        league = League.NFL,
+                        season = season,
+                        seasonTypes = seasonTypesToRemove
+                    )
+
                 }
+
+
             }
         }
 
@@ -159,7 +400,11 @@ class SportAlarmWorker(
 
         Log.d(WORK_NAME, "nflMatchesResult $nflMatchesResult")
 
-        Log.d(WORK_NAME,"HERE WE ARE")
+        val nflTeamsResult = nflTeamsAsync.await()
+
+        Log.d(WORK_NAME, "nflTeamsResult $nflTeamsResult")
+
+        Log.d(WORK_NAME, "HERE WE ARE")
 
         isSuccess =
             (nhlMatchesResult is LoadResult.Success) &&

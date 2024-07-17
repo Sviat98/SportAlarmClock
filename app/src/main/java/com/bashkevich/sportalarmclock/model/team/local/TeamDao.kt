@@ -18,7 +18,7 @@ interface TeamDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertFavTeamSign(favSigns: List<FavouriteTeamEntity>)
 
-    @Query("SELECT * FROM team WHERE league in (:leagues) ORDER BY city,name")
+    @Query("SELECT * FROM team WHERE league in (:leagues)  and active=1 ORDER BY city,name")
     fun getAllLeagueTeams(leagues: List<League>): Flow<List<TeamWithFavouriteSignEntity>>
 
     @Query("UPDATE favourite_team SET is_favourite = :isFavourite WHERE team_id = :teamId")
@@ -26,6 +26,9 @@ interface TeamDao {
 
     @Query("DELETE FROM team WHERE league = :league")
     suspend fun deleteTeamsByLeague(league: League)
+
+    @Query("DELETE FROM favourite_team WHERE team_id NOT IN (:teamIds) and league =:league")
+    suspend fun deleteFavTeams(teamIds: List<Int>, league: League)
 
     @Transaction
     suspend fun replaceTeamsList(teams: List<TeamEntity>) {
@@ -35,6 +38,7 @@ interface TeamDao {
         insertTeams(teams)
 
         val teamIds = teams.map { it.id }
-        insertFavTeamSign(teamIds.map { teamId -> FavouriteTeamEntity(teamId, false) })
+        deleteFavTeams(teamIds = teamIds, league = league)
+        insertFavTeamSign(teamIds.map { teamId -> FavouriteTeamEntity(teamId, league, false) })
     }
 }
