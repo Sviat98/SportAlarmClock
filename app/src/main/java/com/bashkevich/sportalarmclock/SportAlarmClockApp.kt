@@ -11,6 +11,7 @@ import com.bashkevich.sportalarmclock.di.seasonModule
 import com.bashkevich.sportalarmclock.di.settingsModule
 import com.bashkevich.sportalarmclock.di.teamModule
 import com.bashkevich.sportalarmclock.di.workerModule
+import com.bashkevich.sportalarmclock.model.database.SportDatabase
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory

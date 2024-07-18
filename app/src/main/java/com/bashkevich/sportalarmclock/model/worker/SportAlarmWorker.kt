@@ -57,13 +57,16 @@ class SportAlarmWorker(
 
         Log.d(WORK_NAME, "START")
 
-        coroutineScope {
-//            db.runInTransaction{
-//                runBlocking {
-//                    db.clearAllTables()
-//                }
-//            }
+        db.runInTransaction{
+            runBlocking {
+                db.clearAllTables()
 
+                Log.d(WORK_NAME, "clearAllTables FINISHED")
+
+            }
+        }
+
+        coroutineScope {
             nhlSeasonAsync = async {
                 seasonRepository.fetchNHLCurrentSeason()
             }
@@ -124,14 +127,6 @@ class SportAlarmWorker(
         val nflSeasonResult = nflSeasonAsync.await()
 
         Log.d(WORK_NAME, "nflSeasonResult $nflSeasonResult")
-
-        matchRepository.removeOldMatches(
-            league = League.MLB,
-            season = 2024,
-            seasonTypes = emptyList()
-        )
-
-        Log.d(WORK_NAME, "removeOldMatches empty list filter done")
 
         coroutineScope {
             if (nhlSeasonResult is LoadResult.Success) {

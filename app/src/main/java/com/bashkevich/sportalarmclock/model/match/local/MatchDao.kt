@@ -31,6 +31,14 @@ interface MatchDao {
     @Query("DELETE FROM `match` WHERE league = :league and season=:season and season_type  =:seasonType")
     suspend fun deleteMatchesByLeagueAndSeason(league: League, season: Int, seasonType: SeasonType)
 
+    @Query("DELETE FROM favourite_match WHERE match_id NOT IN (:matchIds) and league =:league and season = :season and season_type=:seasonType")
+    suspend fun deleteFavMatches(
+        matchIds: List<Int>,
+        league: League,
+        season: Int,
+        seasonType: SeasonType
+    )
+
     @Query("DELETE FROM `match` WHERE league = :league and (season<:season or season_type in (:seasonTypes))")
     suspend fun deleteOldMatches(league: League, season: Int, seasonTypes: List<SeasonType>)
 
@@ -59,6 +67,12 @@ interface MatchDao {
         insertMatches(matches)
 
         val matchIds = matches.map { it.id }
+        deleteFavMatches(
+            matchIds = matchIds,
+            league = league,
+            season = season,
+            seasonType = seasonType
+        )
         insertFavMatchSign(matchIds.map { matchId ->
             FavouriteMatchEntity(
                 matchId,
