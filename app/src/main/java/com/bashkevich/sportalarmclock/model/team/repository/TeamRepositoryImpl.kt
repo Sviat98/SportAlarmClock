@@ -41,6 +41,16 @@ class TeamRepositoryImpl(
         return result
     }
 
+    override suspend fun fetchAllMLBEspnTeams() : LoadResult<List<Team>,Throwable> {
+
+        val result =   teamRemoteDataSource.fetchMLBEspnTeams()
+            .mapSuccess { teams -> teams.map { it.toTeamEntity() } }
+            .doOnSuccess { teams ->
+                teamLocalDataSource.updateTeamLogos(teams)
+            }.mapSuccess { teams-> teams.map { it.toDomain() } }
+        return result
+    }
+
     override suspend fun fetchAllNBATeams() : LoadResult<List<Team>,Throwable> {
 
         val result =   teamRemoteDataSource.fetchNBATeams()

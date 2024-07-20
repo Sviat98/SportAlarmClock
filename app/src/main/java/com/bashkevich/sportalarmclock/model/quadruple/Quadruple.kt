@@ -19,4 +19,4 @@ data class Quadruple<out A, out B, out C, out D>(
  * Converts this triple into a list.
  * @sample samples.misc.Tuples.tripleToList
  */
-public fun <T> Quadruple<T, T, T, T>.toList(): List<T> = listOf(first, second, third)
+public fun <T> Quadruple<T, T, T, T>.toList(): List<T> = listOf(first, second, third,fourth)

@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.team.remote.MLBTeamDto
 import com.bashkevich.sportalarmclock.model.team.remote.NFLTeamDto
 import com.bashkevich.sportalarmclock.model.team.remote.TeamDto
 
@@ -36,8 +37,17 @@ fun TeamDto.toTeamEntity(league: League) = TeamEntity(
 fun NFLTeamDto.toTeamEntity() = TeamEntity(
     id = id,
     league = League.NFL,
-    isActive = stadiumId!=null,
+    isActive = stadiumId != null,
     city = city,
     name = name,
     logoUrl = logoUrl ?: ""
+)
+
+fun MLBTeamDto.toTeamEntity() = TeamEntity(
+    id = id.toInt(),
+    league = League.MLB,
+    isActive = true,
+    city = city,
+    name = name,
+    logoUrl = logos[0].imageUrl
 )

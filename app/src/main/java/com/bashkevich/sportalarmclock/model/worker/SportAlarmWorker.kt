@@ -24,7 +24,6 @@ class SportAlarmWorker(
     private val seasonRepository: SeasonRepository,
     private val teamRepository: TeamRepository,
     private val matchRepository: MatchRepository,
-    private val db: SportDatabase,
     appContext: Context,
     private val params: WorkerParameters
 ) :
@@ -56,15 +55,6 @@ class SportAlarmWorker(
         var nflMatchesAsync: Deferred<LoadResult<Unit, Throwable>>? = null
 
         Log.d(WORK_NAME, "START")
-
-        db.runInTransaction{
-            runBlocking {
-                db.clearAllTables()
-
-                Log.d(WORK_NAME, "clearAllTables FINISHED")
-
-            }
-        }
 
         coroutineScope {
             nhlSeasonAsync = async {
@@ -249,6 +239,14 @@ class SportAlarmWorker(
                     )
                 }
 
+            }
+
+            val mlbTeamsResult = mlbTeamsAsync.await()
+
+            if(mlbTeamsResult is LoadResult.Success){
+              launch{
+                    teamRepository.fetchAllMLBEspnTeams()
+                }
             }
 
             if (nbaSeasonResult is LoadResult.Success) {

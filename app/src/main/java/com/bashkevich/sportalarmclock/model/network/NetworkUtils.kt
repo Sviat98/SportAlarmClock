@@ -6,4 +6,5 @@ object NetworkUtils {
     const val NBA_BASE_URL = "api.sportsdata.io/v3/nba/scores/json"
     const val NFL_BASE_URL = "api.sportsdata.io/v3/nfl/scores/json"
 
+    const val MLB_ESPN_BASE_URL = "site.api.espn.com/apis/site/v2/sports/baseball/mlb/"
 }

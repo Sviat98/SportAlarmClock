@@ -13,4 +13,5 @@ interface TeamRepository {
     suspend fun fetchAllNBATeams(): LoadResult<List<Team>, Throwable>
     suspend fun fetchAllNFLTeams(): LoadResult<List<Team>, Throwable>
 
+    suspend fun fetchAllMLBEspnTeams(): LoadResult<List<Team>, Throwable>
 }

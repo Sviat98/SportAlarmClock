@@ -48,6 +48,20 @@ class TeamRemoteDataSource(
         }
     }
 
+    suspend fun fetchMLBEspnTeams(): LoadResult<List<MLBTeamDto>,Throwable> = withContext(Dispatchers.IO){
+        runOperationCatching {
+            val teamsList = httpClient.get{
+                contentType(ContentType.Application.Json)
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = NetworkUtils.MLB_ESPN_BASE_URL
+                    encodedPath = "/teams"
+                }
+            }.body<ESPNSportsBody>().sports.first().leagues.first().teams.map { it.team }
+            teamsList
+        }
+    }
+
     suspend fun fetchNBATeams(): LoadResult<List<TeamDto>,Throwable> = withContext(Dispatchers.IO){
         runOperationCatching {
             val teamsList = httpClient.get{
