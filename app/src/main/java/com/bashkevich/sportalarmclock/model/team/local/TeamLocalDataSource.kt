@@ -22,10 +22,4 @@ class TeamLocalDataSource(
         withContext(Dispatchers.IO) {
             teamDao.updateFavTeamSign(teamId = teamId, isFavourite = isFavourite)
         }
-
-    suspend fun updateTeamLogos(teams: List<TeamEntity>) = withContext(Dispatchers.IO){
-        teamDao.updateTeamLogos(teams = teams)
-    }
-
-
 }

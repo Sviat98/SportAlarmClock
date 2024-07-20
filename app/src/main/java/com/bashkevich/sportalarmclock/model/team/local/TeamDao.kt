@@ -24,9 +24,6 @@ interface TeamDao {
     @Query("UPDATE favourite_team SET is_favourite = :isFavourite WHERE team_id = :teamId")
     suspend fun updateFavTeamSign(teamId: Int, isFavourite: Boolean)
 
-    @Query("UPDATE team SET logo = :logo WHERE city = :city and name = :name")
-    suspend fun updateTeamLogo(city: String, name: String, logo: String)
-
     @Query("DELETE FROM team WHERE league = :league")
     suspend fun deleteTeamsByLeague(league: League)
 
@@ -43,12 +40,5 @@ interface TeamDao {
         val teamIds = teams.map { it.id }
         deleteFavTeams(teamIds = teamIds, league = league)
         insertFavTeamSign(teamIds.map { teamId -> FavouriteTeamEntity(teamId, league, false) })
-    }
-
-    @Transaction
-    suspend fun updateTeamLogos(teams: List<TeamEntity>) {
-        teams.forEach { team->
-            updateTeamLogo(city = team.city,name = team.name, logo = team.logoUrl)
-        }
     }
 }

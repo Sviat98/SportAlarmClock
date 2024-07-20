@@ -12,6 +12,4 @@ interface TeamRepository {
     suspend fun toggleFavouriteSign(teamId: Int, isFavourite: Boolean)
     suspend fun fetchAllNBATeams(): LoadResult<List<Team>, Throwable>
     suspend fun fetchAllNFLTeams(): LoadResult<List<Team>, Throwable>
-
-    suspend fun fetchAllMLBEspnTeams(): LoadResult<List<Team>, Throwable>
 }

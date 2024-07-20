@@ -38,7 +38,6 @@ class SportAlarmWorker(
         var isSuccess = false
 
 
-
         var nhlTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
         var mlbTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
         var nbaTeamsAsync: Deferred<LoadResult<List<Team>, Throwable>>
@@ -239,14 +238,6 @@ class SportAlarmWorker(
                     )
                 }
 
-            }
-
-            val mlbTeamsResult = mlbTeamsAsync.await()
-
-            if(mlbTeamsResult is LoadResult.Success){
-              launch{
-                    teamRepository.fetchAllMLBEspnTeams()
-                }
             }
 
             if (nbaSeasonResult is LoadResult.Success) {
