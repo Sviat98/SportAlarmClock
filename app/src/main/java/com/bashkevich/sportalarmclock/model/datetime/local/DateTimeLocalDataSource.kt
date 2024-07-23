@@ -4,9 +4,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.util.Log
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 class DateTimeLocalDataSource(
     private val appContext: Context
@@ -26,6 +33,14 @@ class DateTimeLocalDataSource(
 
         awaitClose {
             appContext.unregisterReceiver(receiver)
+        }
+    }
+
+    fun observeCurrentSystemDate(timeZone: TimeZone) : Flow<LocalDate> = flow {
+        while (true){
+            emit(Clock.System.now().toLocalDateTime(timeZone).date)
+            Log.d("currentSystemDate","${Clock.System.now().toLocalDateTime(timeZone).date}")
+            delay(60000L)
         }
     }
 }

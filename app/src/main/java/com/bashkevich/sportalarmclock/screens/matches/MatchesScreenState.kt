@@ -16,18 +16,19 @@ import kotlinx.datetime.toLocalDateTime
 sealed class MatchesScreenUiEvent : UiEvent {
     class ShowMatchesList(val matches: List<Match>) : MatchesScreenUiEvent()
     class ShowDates(val dates: List<LocalDate>) : MatchesScreenUiEvent()
+    class SelectDate(val date: LocalDate) : MatchesScreenUiEvent()
 }
 
 @Immutable
 data class MatchesScreenState(
     val dates: List<LocalDate>,
+    val selectedDate: LocalDate,
     val matches: List<Match>,
 ) : UiState {
     companion object {
-        private val date = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-
         fun initial() = MatchesScreenState(
             dates = emptyList(),
+            selectedDate = LocalDate(1970,1,1),
             matches = emptyList()
         )
     }

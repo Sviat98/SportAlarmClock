@@ -20,4 +20,6 @@ class DateTimeRepositoryImpl(
     override fun selectDate(date: LocalDate) {
         _selectedDate.value = date
     }
+
+    override fun observeCurrentSystemDate(timeZone: TimeZone) = dateTimeLocalDataSource.observeCurrentSystemDate(timeZone = timeZone)
 }

@@ -1,5 +1,6 @@
 package com.bashkevich.sportalarmclock.screens.matches
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -82,11 +84,21 @@ fun MatchesScreen(
 
     val dates = state.dates
 
-    val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { dates.size })
+    val selectedDate = state.selectedDate
 
-    val selectedTabIndex by remember {
-        derivedStateOf { pagerState.currentPage }
+    val scope = rememberCoroutineScope()
+
+    val selectedTabIndex =
+        if (dates.indexOf(selectedDate) == -1) 0 else dates.indexOf(selectedDate)
+
+    val pagerState = rememberPagerState(initialPage = selectedTabIndex, pageCount = { dates.size })
+
+    SideEffect {
+        Log.d("MatchesScreen current page", "$selectedTabIndex")
+        Log.d("MatchesScreen selectedDate", "$selectedDate")
+
+        Log.d("MatchesScreen state", "$state")
+
     }
 
     Scaffold(
@@ -118,8 +130,7 @@ fun MatchesScreen(
                         unselectedContentColor = MaterialTheme.colorScheme.outline,
                         onClick = {
                             scope.launch {
-                                val newIndex = dates.indexOf(currentTab)
-                                pagerState.animateScrollToPage(newIndex)
+                                pagerState.animateScrollToPage(index)
                                 viewModel.selectDate(currentTab)
                             }
                         },
@@ -134,7 +145,6 @@ fun MatchesScreen(
                                     }.${currentTab.monthNumber.toString().padStart(2, '0')}"
                                 )
                             }
-
                         },
                     )
                 }
@@ -148,19 +158,29 @@ fun MatchesScreen(
                 userScrollEnabled = false,
                 verticalAlignment = Alignment.Top
             ) {
-                LazyColumn(
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(matches) { match ->
-                        MatchItem(
-                            match = match,
-                            onToggleFavouriteSign = { isFavourite ->
-                                viewModel.checkFavourite(
-                                    matchId = match.id,
-                                    isFavourite = isFavourite
-                                )
-                            })
+                if (matches.isEmpty()) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("No scheduled matches")
+                    }
+                } else {
+                    LazyColumn(
+                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(matches) { match ->
+                            MatchItem(
+                                match = match,
+                                onToggleFavouriteSign = { isFavourite ->
+                                    viewModel.checkFavourite(
+                                        matchId = match.id,
+                                        isFavourite = isFavourite
+                                    )
+                                })
+                        }
                     }
                 }
             }

@@ -1,5 +1,6 @@
 package com.bashkevich.sportalarmclock.screens.matches
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
 import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepository
@@ -12,6 +13,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
@@ -37,17 +40,25 @@ class MatchesViewModel(
     init {
 
         viewModelScope.launch {
-            dateTimeRepository.observeCurrentTimeZone().collect { timeZone ->
-
-                val today =
-                    Clock.System.now().toLocalDateTime(timeZone).date
+            dateTimeRepository.observeCurrentTimeZone().flatMapLatest { timeZone ->
+                dateTimeRepository.observeCurrentSystemDate(timeZone = timeZone)
+                    .distinctUntilChanged()
+            }.collect { today ->
+                Log.d("MatchesViewModel observe today", "$today")
 
                 val dates = (0..7).map {
                     today.plus(it, DateTimeUnit.DAY)
                 }
+
+                Log.d("MatchesViewModel observe dates", "$dates")
+
                 sendEvent(MatchesScreenUiEvent.ShowDates(dates = dates))
 
-                selectDate(today)
+                val selectedDate = dateTimeRepository.observeSelectedDate().first()
+
+                if (selectedDate < today) {
+                    selectDate(today)
+                }
             }
         }
 
@@ -68,14 +79,25 @@ class MatchesViewModel(
 
                 val leaguesList = it.fourth
 
+                Log.d(
+                    "MatchesViewModel observe matches",
+                    "$timeZone $currentDate $teamsMode $leaguesList"
+                )
+
                 val dateAtLocalMidnight = currentDate.atStartOfDayIn(timeZone).toLocalDateTime(
                     TimeZone.of(AMERICAN_TIME_ZONE)
                 )
 
-                matchRepository.observeMatchesByDate(dateAtLocalMidnight,leaguesList, teamsMode)
+                matchRepository.observeMatchesByDate(dateAtLocalMidnight, leaguesList, teamsMode)
                     .distinctUntilChanged()
             }.collect { matches ->
                 sendEvent(MatchesScreenUiEvent.ShowMatchesList(matches = matches))
+            }
+        }
+
+        viewModelScope.launch {
+            dateTimeRepository.observeSelectedDate().collect{selectedDate->
+                sendEvent(MatchesScreenUiEvent.SelectDate(selectedDate))
             }
         }
     }
@@ -92,6 +114,7 @@ class MatchesViewModel(
 
     fun selectDate(currentTab: LocalDate) {
         dateTimeRepository.selectDate(currentTab)
+        Log.d("MatchesViewModel selectDate", "$currentTab")
     }
 
     private class MainReducer(initial: MatchesScreenState) :
@@ -101,11 +124,12 @@ class MatchesViewModel(
                 is MatchesScreenUiEvent.ShowMatchesList -> {
                     setState(oldState.copy(matches = event.matches))
                 }
-
                 is MatchesScreenUiEvent.ShowDates -> {
                     setState(oldState.copy(dates = event.dates))
                 }
-
+                is MatchesScreenUiEvent.SelectDate -> {
+                    setState(oldState.copy(selectedDate = event.date))
+                }
                 else -> {}
             }
         }
