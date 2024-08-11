@@ -3,6 +3,7 @@ package com.bashkevich.sportalarmclock.screens.matches
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -60,7 +61,10 @@ import coil.decode.SvgDecoder
 import coil.imageLoader
 import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.match.domain.Match
+import com.bashkevich.sportalarmclock.model.season.SeasonType
+import com.bashkevich.sportalarmclock.model.season.toSeasonString
 import com.bashkevich.sportalarmclock.model.team.domain.Team
+import com.bashkevich.sportalarmclock.ui.component.BasicHeader
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
@@ -81,6 +85,27 @@ fun MatchesScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val matches = state.matches
+
+    val matchesBySeason = matches.groupBy { Pair(it.league, it.seasonType) }.toSortedMap(
+        compareBy {
+            val leagueNumber = when (it.first) {
+                League.NHL -> 1
+                League.NBA -> 2
+                League.MLB -> 3
+                League.NFL -> 4
+            }
+
+            val seasonTypeNumber = when (it.second) {
+                SeasonType.PRE -> 1
+                SeasonType.REG -> 2
+                SeasonType.STAR -> 3
+                SeasonType.POST -> 4
+                SeasonType.OFF -> 5
+            }
+
+            leagueNumber * League.entries.size + seasonTypeNumber
+        }
+    )
 
     val dates = state.dates
 
@@ -171,15 +196,25 @@ fun MatchesScreen(
                         contentPadding = PaddingValues(8.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        items(matches) { match ->
-                            MatchItem(
-                                match = match,
-                                onToggleFavouriteSign = { isFavourite ->
-                                    viewModel.checkFavourite(
-                                        matchId = match.id,
-                                        isFavourite = isFavourite
-                                    )
-                                })
+                        matchesBySeason.forEach { (key, matchesList) ->
+                            stickyHeader {
+                                BasicHeader(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(color = Color.White),
+                                    text = "${key.first}. ${key.second.toSeasonString()}"
+                                )
+                            }
+                            items(matchesList) { match ->
+                                MatchItem(
+                                    match = match,
+                                    onToggleFavouriteSign = { isFavourite ->
+                                        viewModel.checkFavourite(
+                                            matchId = match.id,
+                                            isFavourite = isFavourite
+                                        )
+                                    })
+                            }
                         }
                     }
                 }
@@ -198,7 +233,6 @@ fun MatchItem(
 ) {
     Card(
         modifier = modifier,
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         border = BorderStroke(width = 2.dp, color = Color.Black)
     ) {
         Row(
@@ -273,6 +307,7 @@ private fun MatchItemPreview() {
         match = Match(
             id = 1,
             league = League.MLB,
+            seasonType = SeasonType.OFF,
             homeTeam = Team(
                 id = 1,
                 league = League.MLB,

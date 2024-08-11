@@ -3,6 +3,7 @@ package com.bashkevich.sportalarmclock.model.match.domain
 import com.bashkevich.sportalarmclock.model.datetime.convertFromAmericanTimeZone
 import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.match.local.MatchWithTeamsEntity
+import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.model.team.domain.toDomain
 import kotlinx.datetime.LocalDateTime
@@ -10,6 +11,7 @@ import kotlinx.datetime.LocalDateTime
 data class Match(
     val id: Int,
     val league: League,
+    val seasonType: SeasonType,
     val homeTeam: Team,
     val awayTeam: Team,
     val dateTime: LocalDateTime,
@@ -19,6 +21,7 @@ data class Match(
 fun MatchWithTeamsEntity.toDomain() = Match(
     id = matchWithFavouriteSignEntity.matchEntity.id,
     league = matchWithFavouriteSignEntity.matchEntity.league,
+    seasonType = matchWithFavouriteSignEntity.matchEntity.seasonType,
     homeTeam = homeTeamEntity.toDomain(),
     awayTeam = awayTeamEntity.toDomain(),
     dateTime = matchWithFavouriteSignEntity.matchEntity.dateTime.convertFromAmericanTimeZone(),

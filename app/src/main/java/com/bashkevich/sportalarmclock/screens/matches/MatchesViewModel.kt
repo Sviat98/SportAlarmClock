@@ -55,7 +55,7 @@ class MatchesViewModel(
                 sendEvent(MatchesScreenUiEvent.ShowDates(dates = dates))
 
                 val selectedDate = dateTimeRepository.observeSelectedDate().first()
-
+                // при запуске приложения дата 01.01.1970б что вызывывает функцию selectDate
                 if (selectedDate < today) {
                     selectDate(today)
                 }

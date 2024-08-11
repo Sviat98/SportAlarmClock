@@ -23,7 +23,7 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNHLMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status == "Scheduled" } }
+            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -50,7 +50,7 @@ class MatchRepositoryImpl(
     ): LoadResult<Unit, Throwable> {
 
         val result = matchRemoteDataSource.fetchMLBMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status == "Scheduled" } }
+            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -76,7 +76,7 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNBAMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status == "Scheduled" } }
+            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -102,7 +102,7 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNFLMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status == "Scheduled" && it.id != null } }
+            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") && it.id != null } }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(

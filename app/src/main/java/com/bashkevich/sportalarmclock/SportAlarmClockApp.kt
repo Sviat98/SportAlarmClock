@@ -11,12 +11,10 @@ import com.bashkevich.sportalarmclock.di.seasonModule
 import com.bashkevich.sportalarmclock.di.settingsModule
 import com.bashkevich.sportalarmclock.di.teamModule
 import com.bashkevich.sportalarmclock.di.workerModule
-import com.bashkevich.sportalarmclock.model.database.SportDatabase
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 class SportAlarmClockApp : Application() {
@@ -32,7 +30,7 @@ class SportAlarmClockApp : Application() {
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
             SportAlarmWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.UPDATE,
-            PeriodicWorkRequest.Builder(SportAlarmWorker::class.java, 2L, TimeUnit.HOURS).build()
+            PeriodicWorkRequest.Builder(SportAlarmWorker::class.java, 6L, TimeUnit.HOURS).build()
         )
     }
 }
