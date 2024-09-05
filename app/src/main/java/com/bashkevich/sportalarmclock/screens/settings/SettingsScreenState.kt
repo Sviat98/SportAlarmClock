@@ -1,7 +1,7 @@
 package com.bashkevich.sportalarmclock.screens.settings
 
 import androidx.compose.runtime.Immutable
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import com.bashkevich.sportalarmclock.mvi.UiAction
 import com.bashkevich.sportalarmclock.mvi.UiEvent
@@ -9,19 +9,19 @@ import com.bashkevich.sportalarmclock.mvi.UiState
 
 @Immutable
 sealed class SettingsScreenUiEvent : UiEvent {
-    class ShowLeaguesList(val leagues: List<League>) : SettingsScreenUiEvent()
+    class ShowLeaguesList(val leagueTypes: List<LeagueType>) : SettingsScreenUiEvent()
     class ShowTeamsMode(val teamsMode: TeamsMode) : SettingsScreenUiEvent()
 }
 
 @Immutable
 data class SettingsScreenState(
-    val leagues: List<League>,
+    val leagueTypes: List<LeagueType>,
     val teamsMode: TeamsMode
 ) : UiState {
     companion object {
 
         fun initial() = SettingsScreenState(
-            leagues = emptyList(),
+            leagueTypes = emptyList(),
             teamsMode = TeamsMode.ALL
         )
     }

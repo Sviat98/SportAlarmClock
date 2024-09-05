@@ -1,7 +1,6 @@
 package com.bashkevich.sportalarmclock.model.database
 
 import androidx.room.TypeConverter
-import com.bashkevich.sportalarmclock.model.league.League
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 
 class SeasonTypeConverter {

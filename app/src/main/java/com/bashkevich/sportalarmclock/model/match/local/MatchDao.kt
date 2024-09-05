@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
@@ -20,7 +20,7 @@ interface MatchDao {
 
     @Query("SELECT * FROM `match` WHERE league in (:leaguesList) and date_time BETWEEN :dateBegin and :dateEnd ORDER BY date_time")
     fun getAllMatchesByDate(
-        leaguesList: List<League>,
+        leaguesList: List<LeagueType>,
         dateBegin: LocalDateTime,
         dateEnd: LocalDateTime
     ): Flow<List<MatchWithTeamsEntity>>
@@ -28,55 +28,55 @@ interface MatchDao {
     @Query("UPDATE favourite_match SET is_favourite = :isFavourite WHERE match_id = :matchId")
     suspend fun updateFavMatchSign(matchId: Int, isFavourite: Boolean)
 
-    @Query("DELETE FROM `match` WHERE league = :league and season=:season and season_type  =:seasonType")
-    suspend fun deleteMatchesByLeagueAndSeason(league: League, season: Int, seasonType: SeasonType)
+    @Query("DELETE FROM `match` WHERE league = :leagueType and season=:season and season_type  =:seasonType")
+    suspend fun deleteMatchesByLeagueAndSeason(leagueType: LeagueType, season: Int, seasonType: SeasonType)
 
-    @Query("DELETE FROM favourite_match WHERE match_id NOT IN (:matchIds) and league =:league and season = :season and season_type=:seasonType")
+    @Query("DELETE FROM favourite_match WHERE match_id NOT IN (:matchIds) and league =:leagueType and season = :season and season_type=:seasonType")
     suspend fun deleteFavMatches(
         matchIds: List<Int>,
-        league: League,
+        leagueType: LeagueType,
         season: Int,
         seasonType: SeasonType
     )
 
-    @Query("DELETE FROM `match` WHERE league = :league and (season<:season or season_type in (:seasonTypes))")
-    suspend fun deleteOldMatches(league: League, season: Int, seasonTypes: List<SeasonType>)
+    @Query("DELETE FROM `match` WHERE league = :leagueType and (season<:season or season_type in (:seasonTypes))")
+    suspend fun deleteOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>)
 
-    @Query("DELETE FROM favourite_match WHERE league = :league and (season<:season or season_type in (:seasonTypes))")
+    @Query("DELETE FROM favourite_match WHERE league = :leagueType and (season<:season or season_type in (:seasonTypes))")
     suspend fun deleteOldFavouriteMatches(
-        league: League,
+        leagueType: LeagueType,
         season: Int,
         seasonTypes: List<SeasonType>
     )
 
     @Transaction
-    suspend fun removeOldMatches(league: League, season: Int, seasonTypes: List<SeasonType>) {
-        deleteOldMatches(league = league, season = season, seasonTypes = seasonTypes)
-        deleteOldFavouriteMatches(league = league, season = season, seasonTypes = seasonTypes)
+    suspend fun removeOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>) {
+        deleteOldMatches(leagueType = leagueType, season = season, seasonTypes = seasonTypes)
+        deleteOldFavouriteMatches(leagueType = leagueType, season = season, seasonTypes = seasonTypes)
     }
 
 
     @Transaction
     suspend fun replaceMatchesList(
         matches: List<MatchEntity>,
-        league: League,
+        leagueType: LeagueType,
         season: Int,
         seasonType: SeasonType
     ) {
-        deleteMatchesByLeagueAndSeason(league, season, seasonType)
+        deleteMatchesByLeagueAndSeason(leagueType, season, seasonType)
         insertMatches(matches)
 
         val matchIds = matches.map { it.id }
         deleteFavMatches(
             matchIds = matchIds,
-            league = league,
+            leagueType = leagueType,
             season = season,
             seasonType = seasonType
         )
         insertFavMatchSign(matchIds.map { matchId ->
             FavouriteMatchEntity(
                 matchId,
-                league,
+                leagueType,
                 season,
                 seasonType,
                 false

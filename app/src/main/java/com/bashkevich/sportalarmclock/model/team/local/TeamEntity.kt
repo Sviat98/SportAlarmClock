@@ -3,7 +3,7 @@ package com.bashkevich.sportalarmclock.model.team.local
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.team.remote.MLBTeamDto
 import com.bashkevich.sportalarmclock.model.team.remote.NFLTeamDto
 import com.bashkevich.sportalarmclock.model.team.remote.TeamDto
@@ -14,7 +14,7 @@ data class TeamEntity(
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "league")
-    val league: League,
+    val leagueType: LeagueType,
     @ColumnInfo(name = "active")
     val isActive: Boolean,
     @ColumnInfo(name = "city")
@@ -25,18 +25,18 @@ data class TeamEntity(
     val logoUrl: String,
 )
 
-fun TeamDto.toTeamEntity(league: League) = TeamEntity(
+fun TeamDto.toTeamEntity(leagueType: LeagueType) = TeamEntity(
     id = id,
-    league = league,
+    leagueType = leagueType,
     isActive = isActive,
     city = city,
     name = name,
-    logoUrl = if (league == League.MLB) wordMarkUrl ?: logoUrl ?: "" else logoUrl ?: ""
+    logoUrl = if (leagueType == LeagueType.MLB) wordMarkUrl ?: logoUrl ?: "" else logoUrl ?: ""
 )
 
 fun NFLTeamDto.toTeamEntity() = TeamEntity(
     id = id,
-    league = League.NFL,
+    leagueType = LeagueType.NFL,
     isActive = stadiumId != null,
     city = city,
     name = name,
@@ -45,7 +45,7 @@ fun NFLTeamDto.toTeamEntity() = TeamEntity(
 
 fun MLBTeamDto.toTeamEntity() = TeamEntity(
     id = id.toInt(),
-    league = League.MLB,
+    leagueType = LeagueType.MLB,
     isActive = true,
     city = city,
     name = name,

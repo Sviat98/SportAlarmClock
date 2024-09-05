@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import kotlinx.coroutines.flow.map
 
@@ -30,9 +30,9 @@ class SportDatastore(
         }
     }
 
-    suspend fun setLeagues(leagues: List<League>) {
+    suspend fun setLeagues(leagueTypes: List<LeagueType>) {
         datastore.edit { preferences ->
-            preferences[PREF_LEAGUES] = leagues.joinToString(",") { it.name }
+            preferences[PREF_LEAGUES] = leagueTypes.joinToString(",") { it.name }
         }
     }
 
@@ -41,11 +41,11 @@ class SportDatastore(
     }
 
     fun observeLeagues() = datastore.data.map { preferences ->
-        preferences[PREF_LEAGUES]?.split(",")?.map { League.valueOf(it) } ?: listOf(
-            League.NHL,
-            League.NBA,
-            League.MLB,
-            League.NFL
+        preferences[PREF_LEAGUES]?.split(",")?.map { LeagueType.valueOf(it) } ?: listOf(
+            LeagueType.NHL,
+            LeagueType.NBA,
+            LeagueType.MLB,
+            LeagueType.NFL
         )
     }
 }

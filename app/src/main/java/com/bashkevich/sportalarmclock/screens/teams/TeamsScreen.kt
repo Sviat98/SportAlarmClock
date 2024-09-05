@@ -37,7 +37,7 @@ import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.imageLoader
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.ui.component.BasicHeader
 
@@ -63,12 +63,12 @@ fun TeamsScreen(
 
         val teams = state.teams
 
-        val teamsByLeague = teams.groupBy { it.league }.toSortedMap(compareBy {
+        val teamsByLeagueType = teams.groupBy { it.leagueType }.toSortedMap(compareBy {
             when (it) {
-                League.NHL -> 0
-                League.NBA -> 1
-                League.MLB -> 2
-                League.NFL -> 3
+                LeagueType.NHL -> 0
+                LeagueType.NBA -> 1
+                LeagueType.MLB -> 2
+                LeagueType.NFL -> 3
             }
         })
 
@@ -78,7 +78,7 @@ fun TeamsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
-            teamsByLeague.forEach { (league, teamsInLeague) ->
+            teamsByLeagueType.forEach { (league, teamsInLeague) ->
                 stickyHeader {
                     BasicHeader(
                         modifier = Modifier
@@ -171,7 +171,7 @@ fun TeamItemPreview(modifier: Modifier = Modifier) {
     TeamItem(
         team = Team(
             1,
-            League.NHL,
+            LeagueType.NHL,
             city = "Calgary",
             name = "Flames",
             logoUrl = "https://upload.wikimedia.org/wikipedia/en/6/61/Calgary_Flames_logo.svg",

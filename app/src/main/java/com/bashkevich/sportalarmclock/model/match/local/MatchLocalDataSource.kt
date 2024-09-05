@@ -1,13 +1,13 @@
 package com.bashkevich.sportalarmclock.model.match.local
 
+import android.util.Log
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimePeriod
@@ -22,17 +22,17 @@ class MatchLocalDataSource(
 ) {
     suspend fun replaceMatchesList(
         matches: List<MatchEntity>,
-        league: League,
+        leagueType: LeagueType,
         season: Int,
         seasonType: SeasonType
     ) =
         withContext(Dispatchers.IO) {
-            matchDao.replaceMatchesList(matches, league, season, seasonType)
+            matchDao.replaceMatchesList(matches, leagueType, season, seasonType)
         }
 
     fun observeMatchesByDate(
         date: LocalDateTime,
-        leaguesList: List<League>,
+        leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
     ): Flow<List<MatchWithTeamsEntity>> {
 
@@ -41,11 +41,15 @@ class MatchLocalDataSource(
                 AMERICAN_TIME_ZONE
             )
         ).toLocalDateTime(TimeZone.of(AMERICAN_TIME_ZONE))
+
+        Log.d("MatchLocalDataSource dates","$date $dateEnd")
         return matchDao.getAllMatchesByDate(
             leaguesList = leaguesList,
             dateBegin = date,
             dateEnd = dateEnd
         ).map { matches ->
+            Log.d("MatchLocalDataSource matches",matches.toString())
+
             matches.filter { match ->
                 if (teamsMode == TeamsMode.FAVOURITES) {
                     match.homeTeamEntity.favouriteTeamEntity.isFavourite || match.awayTeamEntity.favouriteTeamEntity.isFavourite
@@ -62,8 +66,8 @@ class MatchLocalDataSource(
             matchDao.updateFavMatchSign(matchId = matchId, isFavourite = isFavourite)
         }
 
-    suspend fun removeOldMatches(league: League, season: Int, seasonTypes: List<SeasonType>) =
+    suspend fun removeOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>) =
         withContext(Dispatchers.IO) {
-            matchDao.removeOldMatches(league = league, season = season, seasonTypes = seasonTypes)
+            matchDao.removeOldMatches(leagueType = leagueType, season = season, seasonTypes = seasonTypes)
         }
 }

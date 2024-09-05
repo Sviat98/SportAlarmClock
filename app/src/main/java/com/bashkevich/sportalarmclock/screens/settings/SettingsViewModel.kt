@@ -2,7 +2,7 @@ package com.bashkevich.sportalarmclock.screens.settings
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
 import com.bashkevich.sportalarmclock.mvi.BaseViewModel
@@ -22,7 +22,7 @@ class SettingsViewModel(
     init {
         viewModelScope.launch {
             settingsRepository.observeLeaguesList().collect { leagues ->
-                sendEvent(SettingsScreenUiEvent.ShowLeaguesList(leagues = leagues))
+                sendEvent(SettingsScreenUiEvent.ShowLeaguesList(leagueTypes = leagues))
             }
         }
 
@@ -37,16 +37,16 @@ class SettingsViewModel(
         reducer.sendEvent(event)
     }
 
-    fun toggleLeague(league: League, checked: Boolean) {
+    fun toggleLeague(leagueType: LeagueType, checked: Boolean) {
         Log.d("leagues checked", checked.toString())
 
         viewModelScope.launch {
-            val leagues = state.value.leagues.toMutableList()
+            val leagues = state.value.leagueTypes.toMutableList()
 
             if (checked) {
-                leagues += league
+                leagues += leagueType
             } else {
-                leagues -= league
+                leagues -= leagueType
             }
 
             Log.d("leagues", leagues.joinToString(","))
@@ -67,7 +67,7 @@ class SettingsViewModel(
         override fun reduce(oldState: SettingsScreenState, event: SettingsScreenUiEvent) {
             when (event) {
                 is SettingsScreenUiEvent.ShowLeaguesList -> {
-                    setState(oldState.copy(leagues = event.leagues))
+                    setState(oldState.copy(leagueTypes = event.leagueTypes))
                 }
 
                 is SettingsScreenUiEvent.ShowTeamsMode -> {

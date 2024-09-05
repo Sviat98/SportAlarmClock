@@ -1,8 +1,6 @@
 package com.bashkevich.sportalarmclock.model.team.local
 
-import com.bashkevich.sportalarmclock.model.database.SportDatabase
-import com.bashkevich.sportalarmclock.model.league.League
-import com.bashkevich.sportalarmclock.model.team.domain.Team
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -14,8 +12,8 @@ class TeamLocalDataSource(
         teamDao.replaceTeamsList(teams)
     }
 
-    fun observeTeamsByLeagues(leagues: List<League>): Flow<List<TeamWithFavouriteSignEntity>> =
-        teamDao.getAllLeagueTeams(leagues = leagues)
+    fun observeTeamsByLeagues(leagueTypes: List<LeagueType>): Flow<List<TeamWithFavouriteSignEntity>> =
+        teamDao.getAllLeagueTeams(leagueTypes = leagueTypes)
 
 
     suspend fun toggleFavouriteSign(teamId: Int, isFavourite: Boolean) =

@@ -1,5 +1,6 @@
 package com.bashkevich.sportalarmclock.di
 
+import android.app.AlarmManager
 import android.content.Context
 import androidx.room.Room
 import com.bashkevich.sportalarmclock.model.database.SportDatabase
@@ -95,6 +96,14 @@ val coreModule = module {
         val appContext: Context = get()
 
         SportDatastore(appContext)
+    }
+
+    single {
+        val appContext: Context = get()
+
+        val alarmManager = appContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        alarmManager
     }
 }
 

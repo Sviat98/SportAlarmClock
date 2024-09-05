@@ -3,7 +3,7 @@ package com.bashkevich.sportalarmclock.model.match.local
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.match.remote.MatchDto
 import com.bashkevich.sportalarmclock.model.match.remote.NFLMatchDto
 import com.bashkevich.sportalarmclock.model.season.SeasonType
@@ -15,7 +15,7 @@ data class MatchEntity(
     @ColumnInfo(name = "id")
     val id: Int,
     @ColumnInfo(name = "league")
-    val league: League,
+    val leagueType: LeagueType,
     @ColumnInfo(name = "season")
     val season: Int,
     @ColumnInfo(name = "season_type")
@@ -28,30 +28,30 @@ data class MatchEntity(
     val dateTime: LocalDateTime
 )
 
-fun MatchDto.toMatchEntity(league: League, season: Int, seasonType: SeasonType) = MatchEntity(
-    id = id.countGlobalId(league),
-    league = league,
+fun MatchDto.toMatchEntity(leagueType: LeagueType, season: Int, seasonType: SeasonType) = MatchEntity(
+    id = id.countGlobalId(leagueType),
+    leagueType = leagueType,
     season = season,
     seasonType = seasonType,
-    homeTeamId = homeTeamId.countGlobalId(league),
-    awayTeamId = awayTeamId.countGlobalId(league),
-    dateTime = dateTime!!
-)
-
-fun NFLMatchDto.toMatchEntity(league: League, season: Int, seasonType: SeasonType) = MatchEntity(
-    id = id?.countGlobalId(league) ?: 0,
-    league = league,
-    season = season,
-    seasonType = seasonType,
-    homeTeamId = homeTeamId?.countGlobalId(league) ?: 0,
-    awayTeamId = awayTeamId?.countGlobalId(league) ?: 0,
+    homeTeamId = homeTeamId.countGlobalId(leagueType),
+    awayTeamId = awayTeamId.countGlobalId(leagueType),
     dateTime = dateTime ?: LocalDateTime(1970, 1, 1, 0, 0, 0)
 )
 
-private fun Int.countGlobalId(league: League) =
-    when (league) {
-        League.NHL -> this + 30000000
-        League.MLB -> this + 10000000
-        League.NBA -> this + 20000000
-        League.NFL -> this
+fun NFLMatchDto.toMatchEntity(leagueType: LeagueType, season: Int, seasonType: SeasonType) = MatchEntity(
+    id = id?.countGlobalId(leagueType) ?: 0,
+    leagueType = leagueType,
+    season = season,
+    seasonType = seasonType,
+    homeTeamId = homeTeamId?.countGlobalId(leagueType) ?: 0,
+    awayTeamId = awayTeamId?.countGlobalId(leagueType) ?: 0,
+    dateTime = dateTime ?: LocalDateTime(1970, 1, 1, 0, 0, 0)
+)
+
+private fun Int.countGlobalId(leagueType: LeagueType) =
+    when (leagueType) {
+        LeagueType.NHL -> this + 30000000
+        LeagueType.MLB -> this + 10000000
+        LeagueType.NBA -> this + 20000000
+        LeagueType.NFL -> this
     }

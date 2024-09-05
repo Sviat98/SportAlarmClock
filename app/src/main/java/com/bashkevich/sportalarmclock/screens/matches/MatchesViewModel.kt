@@ -91,12 +91,39 @@ class MatchesViewModel(
                 matchRepository.observeMatchesByDate(dateAtLocalMidnight, leaguesList, teamsMode)
                     .distinctUntilChanged()
             }.collect { matches ->
-                sendEvent(MatchesScreenUiEvent.ShowMatchesList(matches = matches))
+                val matchesByDate = matches.groupBy { it.dateTime }.filter {
+                    it.value.any { match -> match.isChecked }
+                }
+
+                val mutableMatches = matches.toMutableList()
+
+                Log.d("MatchesViewModel matchesByDate",matchesByDate.toString())
+
+                matchesByDate.forEach { (dateTime, matchesOnDate) ->
+                    val matchesToDisable = matchesOnDate.filter { !it.isChecked }
+
+                    matchesToDisable.forEach { matchToDisable->
+                        val index = mutableMatches.indexOf(matchToDisable)
+
+                        Log.d("MatchesViewModel matchToDisable","$matchToDisable $index")
+
+
+                        mutableMatches[index] = matchToDisable.copy(isAbleToAlarm = false)
+
+                        Log.d("MatchesViewModel match",matchToDisable.copy(isAbleToAlarm = false).toString())
+
+                    }
+                }
+
+                Log.d("MatchesViewModel matches",mutableMatches.toString())
+
+
+                sendEvent(MatchesScreenUiEvent.ShowMatchesList(matches = mutableMatches.toList()))
             }
         }
 
         viewModelScope.launch {
-            dateTimeRepository.observeSelectedDate().collect{selectedDate->
+            dateTimeRepository.observeSelectedDate().collect { selectedDate ->
                 sendEvent(MatchesScreenUiEvent.SelectDate(selectedDate))
             }
         }
@@ -124,12 +151,15 @@ class MatchesViewModel(
                 is MatchesScreenUiEvent.ShowMatchesList -> {
                     setState(oldState.copy(matches = event.matches))
                 }
+
                 is MatchesScreenUiEvent.ShowDates -> {
                     setState(oldState.copy(dates = event.dates))
                 }
+
                 is MatchesScreenUiEvent.SelectDate -> {
                     setState(oldState.copy(selectedDate = event.date))
                 }
+
                 else -> {}
             }
         }

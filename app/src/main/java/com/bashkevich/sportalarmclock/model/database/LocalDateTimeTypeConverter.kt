@@ -1,12 +1,8 @@
 package com.bashkevich.sportalarmclock.model.database
 
 import androidx.room.TypeConverter
-import com.bashkevich.sportalarmclock.model.league.League
 import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
 import kotlinx.datetime.format
-import kotlinx.datetime.format.DateTimeComponents
-import kotlinx.datetime.toInstant
 
 class LocalDateTimeTypeConverter {
     @TypeConverter

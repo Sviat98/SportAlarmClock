@@ -1,13 +1,11 @@
 package com.bashkevich.sportalarmclock.model.match.repository
 
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.match.domain.Match
 import com.bashkevich.sportalarmclock.model.network.LoadResult
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
-import com.bashkevich.sportalarmclock.screens.settings.SettingsScreenUiEvent
 import kotlinx.coroutines.flow.Flow
-import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
 
 interface MatchRepository {
@@ -18,11 +16,11 @@ interface MatchRepository {
 
     fun observeMatchesByDate(
         date: LocalDateTime,
-        leaguesList: List<League>,
+        leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
     ): Flow<List<Match>>
 
     suspend fun toggleFavouriteSign(matchId: Int, isFavourite: Boolean)
 
-    suspend fun removeOldMatches(league: League, season: Int, seasonTypes: List<SeasonType>)
+    suspend fun removeOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>)
 }

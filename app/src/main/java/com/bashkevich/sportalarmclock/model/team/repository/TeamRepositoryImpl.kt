@@ -1,7 +1,7 @@
 package com.bashkevich.sportalarmclock.model.team.repository
 
 import android.util.Log
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.network.LoadResult
 import com.bashkevich.sportalarmclock.model.network.doOnSuccess
 import com.bashkevich.sportalarmclock.model.network.mapSuccess
@@ -26,15 +26,15 @@ class TeamRepositoryImpl(
     override suspend fun fetchAllNHLTeams(): LoadResult<List<Team>, Throwable> {
 
         val result = teamRemoteDataSource.fetchNHLTeams()
-            .mapSuccess { teams -> teams.map { it.toTeamEntity(League.NHL) } }
+            .mapSuccess { teams -> teams.map { it.toTeamEntity(LeagueType.NHL) } }
             .doOnSuccess { teams ->
                 teamLocalDataSource.replaceTeamsList(teams)
             }.mapSuccess { teams -> teams.map { it.toDomain() } }
         return result
     }
 
-    override fun observeTeamsByLeagues(leagues: List<League>): Flow<List<Team>> =
-        teamLocalDataSource.observeTeamsByLeagues(leagues).map { it.map { it.toDomain() } }
+    override fun observeTeamsByLeagues(leagueTypes: List<LeagueType>): Flow<List<Team>> =
+        teamLocalDataSource.observeTeamsByLeagues(leagueTypes).map { it.map { it.toDomain() } }
 
     override suspend fun fetchAllMLBTeams(): LoadResult<List<Team>, Throwable> {
 
@@ -45,7 +45,7 @@ class TeamRepositoryImpl(
         coroutineScope {
             mainTeamsAsync = async {
                 teamRemoteDataSource.fetchMLBTeams()
-                    .mapSuccess { teams -> teams.map { it.toTeamEntity(League.MLB) } }
+                    .mapSuccess { teams -> teams.map { it.toTeamEntity(LeagueType.MLB) } }
             }
 
             espnTeamsAsync = async {
@@ -99,7 +99,7 @@ class TeamRepositoryImpl(
     override suspend fun fetchAllNBATeams(): LoadResult<List<Team>, Throwable> {
 
         val result = teamRemoteDataSource.fetchNBATeams()
-            .mapSuccess { teams -> teams.map { it.toTeamEntity(League.NBA) } }
+            .mapSuccess { teams -> teams.map { it.toTeamEntity(LeagueType.NBA) } }
             .doOnSuccess { teams ->
                 teamLocalDataSource.replaceTeamsList(teams)
             }.mapSuccess { teams -> teams.map { it.toDomain() } }

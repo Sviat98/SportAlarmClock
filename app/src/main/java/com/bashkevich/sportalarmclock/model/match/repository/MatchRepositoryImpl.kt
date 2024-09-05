@@ -1,6 +1,7 @@
 package com.bashkevich.sportalarmclock.model.match.repository
 
-import com.bashkevich.sportalarmclock.model.league.League
+import android.util.Log
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.match.domain.toDomain
 import com.bashkevich.sportalarmclock.model.match.local.MatchLocalDataSource
 import com.bashkevich.sportalarmclock.model.match.local.toMatchEntity
@@ -27,7 +28,7 @@ class MatchRepositoryImpl(
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
-                        league = League.NHL,
+                        leagueType = LeagueType.NHL,
                         season = season,
                         seasonType = seasonType
                     )
@@ -36,7 +37,7 @@ class MatchRepositoryImpl(
             .doOnSuccess { matches ->
                 matchLocalDataSource.replaceMatchesList(
                     matches,
-                    League.NHL,
+                    LeagueType.NHL,
                     season = season,
                     seasonType = seasonType
                 )
@@ -54,7 +55,7 @@ class MatchRepositoryImpl(
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
-                        league = League.MLB,
+                        leagueType = LeagueType.MLB,
                         season = season,
                         seasonType = seasonType
                     )
@@ -63,7 +64,7 @@ class MatchRepositoryImpl(
             .doOnSuccess { matches ->
                 matchLocalDataSource.replaceMatchesList(
                     matches = matches,
-                    league = League.MLB,
+                    leagueType = LeagueType.MLB,
                     season = season,
                     seasonType = seasonType
                 )
@@ -80,7 +81,7 @@ class MatchRepositoryImpl(
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
-                        league = League.NBA,
+                        leagueType = LeagueType.NBA,
                         season = season,
                         seasonType = seasonType
                     )
@@ -89,7 +90,7 @@ class MatchRepositoryImpl(
             .doOnSuccess { matches ->
                 matchLocalDataSource.replaceMatchesList(
                     matches = matches,
-                    league = League.NBA,
+                    leagueType = LeagueType.NBA,
                     season = season,
                     seasonType = seasonType
                 )
@@ -102,11 +103,11 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNFLMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") && it.id != null } }
+            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") && it.id != null} }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
-                        league = League.NFL,
+                        leagueType = LeagueType.NFL,
                         season = season,
                         seasonType = seasonType
                     )
@@ -115,7 +116,7 @@ class MatchRepositoryImpl(
             .doOnSuccess { matches ->
                 matchLocalDataSource.replaceMatchesList(
                     matches = matches,
-                    league = League.NFL,
+                    leagueType = LeagueType.NFL,
                     season = season,
                     seasonType = seasonType
                 )
@@ -125,7 +126,7 @@ class MatchRepositoryImpl(
 
     override fun observeMatchesByDate(
         date: LocalDateTime,
-        leaguesList: List<League>,
+        leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
     ) =
         matchLocalDataSource.observeMatchesByDate(date, leaguesList, teamsMode)
@@ -138,12 +139,12 @@ class MatchRepositoryImpl(
     }
 
     override suspend fun removeOldMatches(
-        league: League,
+        leagueType: LeagueType,
         season: Int,
         seasonTypes: List<SeasonType>
     ) {
         matchLocalDataSource.removeOldMatches(
-            league = league,
+            leagueType = leagueType,
             season = season,
             seasonTypes = seasonTypes
         )

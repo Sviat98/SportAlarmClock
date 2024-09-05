@@ -4,8 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.bashkevich.sportalarmclock.model.database.SportDatabase
-import com.bashkevich.sportalarmclock.model.league.League
+import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
 import com.bashkevich.sportalarmclock.model.network.LoadResult
 import com.bashkevich.sportalarmclock.model.season.SeasonType
@@ -18,7 +17,6 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 
 class SportAlarmWorker(
     private val seasonRepository: SeasonRepository,
@@ -171,7 +169,7 @@ class SportAlarmWorker(
 
 
                     matchRepository.removeOldMatches(
-                        league = League.NHL,
+                        leagueType = LeagueType.NHL,
                         season = season,
                         seasonTypes = seasonTypesToRemove
                     )
@@ -232,7 +230,7 @@ class SportAlarmWorker(
                     }
 
                     matchRepository.removeOldMatches(
-                        league = League.MLB,
+                        leagueType = LeagueType.MLB,
                         season = season,
                         seasonTypes = seasonTypesToRemove
                     )
@@ -294,7 +292,7 @@ class SportAlarmWorker(
                     }
 
                     matchRepository.removeOldMatches(
-                        league = League.NBA,
+                        leagueType = LeagueType.NBA,
                         season = season,
                         seasonTypes = seasonTypesToRemove
                     )
@@ -354,7 +352,7 @@ class SportAlarmWorker(
                     }
 
                     matchRepository.removeOldMatches(
-                        league = League.NFL,
+                        leagueType = LeagueType.NFL,
                         season = season,
                         seasonTypes = seasonTypesToRemove
                     )
