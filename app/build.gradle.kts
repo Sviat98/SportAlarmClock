@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.ktor.client.logging)
 
     implementation(libs.room.runtime)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
 

@@ -2,11 +2,16 @@ package com.bashkevich.sportalarmclock.screens.matches
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.bashkevich.sportalarmclock.alarm.AlarmScheduler
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
 import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepository
+import com.bashkevich.sportalarmclock.model.league.LeagueType
+import com.bashkevich.sportalarmclock.model.match.domain.Match
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
 import com.bashkevich.sportalarmclock.model.quadruple.Quadruple
+import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.settings.repository.SettingsRepository
+import com.bashkevich.sportalarmclock.model.team.domain.Team
 import com.bashkevich.sportalarmclock.mvi.BaseViewModel
 import com.bashkevich.sportalarmclock.mvi.Reducer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +25,7 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
@@ -37,8 +43,34 @@ class MatchesViewModel(
     override val state: StateFlow<MatchesScreenState>
         get() = reducer.state
 
-    init {
+    private val testMatch = Match(
+        id = 123456,
+        leagueType = LeagueType.MLB,
+        seasonType = SeasonType.REG,
+        homeTeam = Team(
+            id = 0,
+            leagueType = LeagueType.MLB,
+            city = "Test",
+            name = "Tigers",
+            logoUrl = "",
+            isFavorite = false
+        ),
+        awayTeam = Team(
+            id = 0,
+            leagueType = LeagueType.MLB,
+            city = "Test",
+            name = "Dodgers",
+            logoUrl = "",
+            isFavorite = false
+        ),
+        dateTime = Clock.System.now().plus(2L,DateTimeUnit.MINUTE).toLocalDateTime(
+            TimeZone.currentSystemDefault()
+        ),
+        isChecked = false,
+        isAbleToAlarm = true
+    )
 
+    init {
         viewModelScope.launch {
             dateTimeRepository.observeCurrentTimeZone().flatMapLatest { timeZone ->
                 dateTimeRepository.observeCurrentSystemDate(timeZone = timeZone)
@@ -97,25 +129,29 @@ class MatchesViewModel(
 
                 val mutableMatches = matches.toMutableList()
 
-                Log.d("MatchesViewModel matchesByDate",matchesByDate.toString())
+                Log.d("MatchesViewModel matchesByDate", matchesByDate.toString())
+
+                mutableMatches.add(testMatch)
 
                 matchesByDate.forEach { (dateTime, matchesOnDate) ->
                     val matchesToDisable = matchesOnDate.filter { !it.isChecked }
 
-                    matchesToDisable.forEach { matchToDisable->
+                    matchesToDisable.forEach { matchToDisable ->
                         val index = mutableMatches.indexOf(matchToDisable)
 
-                        Log.d("MatchesViewModel matchToDisable","$matchToDisable $index")
+                        Log.d("MatchesViewModel matchToDisable", "$matchToDisable $index")
 
 
                         mutableMatches[index] = matchToDisable.copy(isAbleToAlarm = false)
 
-                        Log.d("MatchesViewModel match",matchToDisable.copy(isAbleToAlarm = false).toString())
-
+                        Log.d(
+                            "MatchesViewModel match",
+                            matchToDisable.copy(isAbleToAlarm = false).toString()
+                        )
                     }
                 }
 
-                Log.d("MatchesViewModel matches",mutableMatches.toString())
+                Log.d("MatchesViewModel matches", mutableMatches.toString())
 
 
                 sendEvent(MatchesScreenUiEvent.ShowMatchesList(matches = mutableMatches.toList()))
@@ -133,9 +169,9 @@ class MatchesViewModel(
         reducer.sendEvent(event)
     }
 
-    fun checkFavourite(matchId: Int, isFavourite: Boolean) {
+    fun checkFavourite(matchId: Int, dateTime: LocalDateTime, isFavourite: Boolean) {
         viewModelScope.launch {
-            matchRepository.toggleFavouriteSign(matchId = matchId, isFavourite = isFavourite)
+            matchRepository.toggleFavouriteSign(matchId = matchId,dateTime = dateTime, isFavourite = isFavourite)
         }
     }
 

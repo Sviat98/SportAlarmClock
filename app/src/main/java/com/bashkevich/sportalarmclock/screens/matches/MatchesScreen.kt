@@ -195,6 +195,7 @@ fun MatchesScreen(
                                     onToggleFavouriteSign = { isFavourite ->
                                         viewModel.checkFavourite(
                                             matchId = match.id,
+                                            dateTime = match.dateTime,
                                             isFavourite = isFavourite
                                         )
                                     })

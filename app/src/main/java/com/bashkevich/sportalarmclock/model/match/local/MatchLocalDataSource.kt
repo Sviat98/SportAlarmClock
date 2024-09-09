@@ -1,6 +1,7 @@
 package com.bashkevich.sportalarmclock.model.match.local
 
 import android.util.Log
+import com.bashkevich.sportalarmclock.alarm.AlarmScheduler
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
 import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.season.SeasonType
@@ -18,7 +19,8 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 class MatchLocalDataSource(
-    private val matchDao: MatchDao
+    private val matchDao: MatchDao,
+    private val alarmScheduler: AlarmScheduler
 ) {
     suspend fun replaceMatchesList(
         matches: List<MatchEntity>,
@@ -61,9 +63,15 @@ class MatchLocalDataSource(
 
     }
 
-    suspend fun toggleFavouriteSign(matchId: Int, isFavourite: Boolean) =
+    suspend fun toggleFavouriteSign(matchId: Int,dateTime: LocalDateTime, isFavourite: Boolean) =
         withContext(Dispatchers.IO) {
             matchDao.updateFavMatchSign(matchId = matchId, isFavourite = isFavourite)
+            if(isFavourite){
+                alarmScheduler.schedule(matchId = matchId, dateTime = dateTime)
+            }else{
+                alarmScheduler.cancel(matchId = matchId)
+            }
+
         }
 
     suspend fun removeOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>) =

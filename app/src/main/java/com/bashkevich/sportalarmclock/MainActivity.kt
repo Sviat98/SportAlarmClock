@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bashkevich.sportalarmclock.navigation.Matches
+import com.bashkevich.sportalarmclock.navigation.Settings
+import com.bashkevich.sportalarmclock.navigation.Teams
 import com.bashkevich.sportalarmclock.screens.matches.MatchesScreen
 import com.bashkevich.sportalarmclock.screens.matches.MatchesViewModel
 import com.bashkevich.sportalarmclock.screens.settings.SettingsScreen
@@ -41,33 +44,24 @@ fun SportAlarmClockHavHost(modifier: Modifier = Modifier) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = Screens.Matches.route,
+        startDestination = Matches,
     ) {
-        composable(route = Screens.Matches.route) {
+        composable<Matches> {
             val viewModel = koinViewModel<MatchesViewModel>()
 
             MatchesScreen(viewModel = viewModel, onTeamsScreenClick = {
-                navController.navigate(route = Screens.Teams.route)
-            }, onSettingsScreenClick = { navController.navigate(route = Screens.Settings.route) })
+                navController.navigate(route = Teams)
+            }, onSettingsScreenClick = { navController.navigate(route = Settings) })
         }
-        composable(route = Screens.Teams.route) {
+        composable<Teams> {
             val viewModel = koinViewModel<TeamsViewModel>()
 
             TeamsScreen(viewModel = viewModel, onBack = { navController.navigateUp() })
         }
-        composable(route = Screens.Settings.route) {
+        composable<Settings> {
             val viewModel = koinViewModel<SettingsViewModel>()
 
             SettingsScreen(viewModel = viewModel, onBack = { navController.navigateUp() })
         }
     }
-}
-
-
-sealed class Screens(
-    val route: String,
-) {
-    data object Matches : Screens("matches")
-    data object Teams : Screens("teams")
-    data object Settings : Screens("settings")
 }

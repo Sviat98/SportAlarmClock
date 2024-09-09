@@ -134,8 +134,8 @@ class MatchRepositoryImpl(
                 matchEntities.map { it.toDomain() }
             }
 
-    override suspend fun toggleFavouriteSign(matchId: Int, isFavourite: Boolean) {
-        matchLocalDataSource.toggleFavouriteSign(matchId = matchId, isFavourite = isFavourite)
+    override suspend fun toggleFavouriteSign(matchId: Int,dateTime: LocalDateTime, isFavourite: Boolean) {
+        matchLocalDataSource.toggleFavouriteSign(matchId = matchId,dateTime = dateTime, isFavourite = isFavourite)
     }
 
     override suspend fun removeOldMatches(

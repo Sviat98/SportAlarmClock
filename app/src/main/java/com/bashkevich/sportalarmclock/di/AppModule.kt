@@ -3,6 +3,8 @@ package com.bashkevich.sportalarmclock.di
 import android.app.AlarmManager
 import android.content.Context
 import androidx.room.Room
+import com.bashkevich.sportalarmclock.alarm.AlarmScheduler
+import com.bashkevich.sportalarmclock.alarm.AlarmSchedulerImpl
 import com.bashkevich.sportalarmclock.model.database.SportDatabase
 import com.bashkevich.sportalarmclock.model.datastore.SportDatastore
 import com.bashkevich.sportalarmclock.model.datetime.local.DateTimeLocalDataSource
@@ -119,6 +121,12 @@ val teamModule = module {
         bind<TeamRepository>()
     }
     viewModelOf(::TeamsViewModel)
+}
+
+val alarmModule = module {
+    singleOf(::AlarmSchedulerImpl) {
+        bind<AlarmScheduler>()
+    }
 }
 
 val matchModule = module {
