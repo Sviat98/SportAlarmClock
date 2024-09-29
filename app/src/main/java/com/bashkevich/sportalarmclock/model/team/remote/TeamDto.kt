@@ -13,6 +13,10 @@ data class TeamDto(
     val city: String,
     @SerialName(value = "Name")
     val name: String,
+    @SerialName(value = "PrimaryColor")
+    val primaryColor: String?,
+    @SerialName(value = "SecondaryColor")
+    val secondaryColor: String?,
     @SerialName(value = "WikipediaLogoUrl")
     val logoUrl: String?,
     @SerialName(value = "WikipediaWordMarkUrl")

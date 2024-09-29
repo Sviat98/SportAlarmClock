@@ -21,6 +21,10 @@ data class TeamEntity(
     val city: String,
     @ColumnInfo(name = "name")
     val name: String,
+    @ColumnInfo(name = "primary_color")
+    val primaryColor: Long,
+    @ColumnInfo(name = "secondary_color")
+    val secondaryColor: Long,
     @ColumnInfo(name = "logo")
     val logoUrl: String,
 )
@@ -31,6 +35,8 @@ fun TeamDto.toTeamEntity(leagueType: LeagueType) = TeamEntity(
     isActive = isActive,
     city = city,
     name = name,
+    primaryColor = primaryColor.convertColor(),
+    secondaryColor = secondaryColor.convertColor(),
     logoUrl = if (leagueType == LeagueType.MLB) wordMarkUrl ?: logoUrl ?: "" else logoUrl ?: ""
 )
 
@@ -40,6 +46,8 @@ fun NFLTeamDto.toTeamEntity() = TeamEntity(
     isActive = stadiumId != null,
     city = city,
     name = name,
+    primaryColor = primaryColor.convertColor(),
+    secondaryColor = secondaryColor.convertColor(),
     logoUrl = logoUrl ?: ""
 )
 
@@ -49,5 +57,10 @@ fun MLBTeamDto.toTeamEntity() = TeamEntity(
     isActive = true,
     city = city,
     name = name,
+    primaryColor = 0L,
+    secondaryColor = 0L,
     logoUrl = logos[0].imageUrl
 )
+
+private fun String?.convertColor() = if (this == null) "FFFFFFFF".toLong(16)
+else "FF$this".toLong(16)

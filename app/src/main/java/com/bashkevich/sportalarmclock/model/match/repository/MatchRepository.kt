@@ -20,6 +20,10 @@ interface MatchRepository {
         teamsMode: TeamsMode
     ): Flow<List<Match>>
 
+    fun observeMatchById(
+        matchId: Int,
+    ): Flow<Match>
+
     suspend fun toggleFavouriteSign(matchId: Int,dateTime: LocalDateTime, isFavourite: Boolean)
 
     suspend fun removeOldMatches(leagueType: LeagueType, season: Int, seasonTypes: List<SeasonType>)

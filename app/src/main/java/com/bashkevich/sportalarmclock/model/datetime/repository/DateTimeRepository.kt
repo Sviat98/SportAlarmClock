@@ -9,4 +9,5 @@ interface DateTimeRepository {
     fun observeSelectedDate(): Flow<LocalDate>
     fun selectDate(date: LocalDate)
     fun observeCurrentSystemDate(timeZone: TimeZone): Flow<LocalDate>
+    fun observeIs24HourFormat(): Flow<Boolean>
 }

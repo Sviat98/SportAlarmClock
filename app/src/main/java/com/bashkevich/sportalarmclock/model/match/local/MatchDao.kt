@@ -25,6 +25,11 @@ interface MatchDao {
         dateEnd: LocalDateTime
     ): Flow<List<MatchWithTeamsEntity>>
 
+    @Query("SELECT * FROM `match` WHERE id=:matchId")
+    fun observeMatchById(
+        matchId: Int
+    ): Flow<MatchWithTeamsEntity>
+
     @Query("UPDATE favourite_match SET is_favourite = :isFavourite WHERE match_id = :matchId")
     suspend fun updateFavMatchSign(matchId: Int, isFavourite: Boolean)
 

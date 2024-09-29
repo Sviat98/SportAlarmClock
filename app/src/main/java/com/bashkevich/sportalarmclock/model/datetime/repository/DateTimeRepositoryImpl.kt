@@ -15,6 +15,9 @@ class DateTimeRepositoryImpl(
     override fun observeCurrentTimeZone(): Flow<TimeZone> =
         dateTimeLocalDataSource.observeCurrentTimeZone()
 
+    override fun observeIs24HourFormat(): Flow<Boolean> =
+        dateTimeLocalDataSource.observeTimeFormat()
+
     override fun observeSelectedDate(): Flow<LocalDate> = _selectedDate.asStateFlow()
 
     override fun selectDate(date: LocalDate) {

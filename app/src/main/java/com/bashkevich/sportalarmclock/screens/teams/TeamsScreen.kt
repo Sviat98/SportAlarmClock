@@ -174,6 +174,7 @@ fun TeamItemPreview(modifier: Modifier = Modifier) {
             LeagueType.NHL,
             city = "Calgary",
             name = "Flames",
+            primaryColor = Color.White,
             logoUrl = "https://upload.wikimedia.org/wikipedia/en/6/61/Calgary_Flames_logo.svg",
             isFavorite = false
         ),

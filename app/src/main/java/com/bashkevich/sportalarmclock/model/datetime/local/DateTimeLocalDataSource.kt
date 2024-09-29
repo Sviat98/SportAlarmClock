@@ -14,6 +14,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
+import android.text.format.DateFormat;
 
 class DateTimeLocalDataSource(
     private val appContext: Context
@@ -30,6 +31,23 @@ class DateTimeLocalDataSource(
         }
 
         appContext.registerReceiver(receiver, IntentFilter(Intent.ACTION_TIMEZONE_CHANGED))
+
+        awaitClose {
+            appContext.unregisterReceiver(receiver)
+        }
+    }
+
+    fun observeTimeFormat() = callbackFlow {
+        trySend(DateFormat.is24HourFormat(appContext))
+        val receiver = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent) {
+                if (intent.action == "android.intent.action.TIME_SET") {
+                    trySend(DateFormat.is24HourFormat(appContext))
+                }
+            }
+        }
+
+        appContext.registerReceiver(receiver, IntentFilter("android.intent.action.TIME_SET"))
 
         awaitClose {
             appContext.unregisterReceiver(receiver)

@@ -2,11 +2,8 @@ package com.bashkevich.sportalarmclock.screens.matches
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.bashkevich.sportalarmclock.alarm.AlarmScheduler
 import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
 import com.bashkevich.sportalarmclock.model.datetime.repository.DateTimeRepository
-import com.bashkevich.sportalarmclock.model.league.LeagueType
-import com.bashkevich.sportalarmclock.model.match.domain.Match
 import com.bashkevich.sportalarmclock.model.match.repository.MatchRepository
 import com.bashkevich.sportalarmclock.model.quadruple.Quadruple
 import com.bashkevich.sportalarmclock.model.season.SeasonType
@@ -43,32 +40,6 @@ class MatchesViewModel(
     override val state: StateFlow<MatchesScreenState>
         get() = reducer.state
 
-    private val testMatch = Match(
-        id = 123456,
-        leagueType = LeagueType.MLB,
-        seasonType = SeasonType.REG,
-        homeTeam = Team(
-            id = 0,
-            leagueType = LeagueType.MLB,
-            city = "Test",
-            name = "Tigers",
-            logoUrl = "",
-            isFavorite = false
-        ),
-        awayTeam = Team(
-            id = 0,
-            leagueType = LeagueType.MLB,
-            city = "Test",
-            name = "Dodgers",
-            logoUrl = "",
-            isFavorite = false
-        ),
-        dateTime = Clock.System.now().plus(2L,DateTimeUnit.MINUTE).toLocalDateTime(
-            TimeZone.currentSystemDefault()
-        ),
-        isChecked = false,
-        isAbleToAlarm = true
-    )
 
     init {
         viewModelScope.launch {
@@ -131,8 +102,6 @@ class MatchesViewModel(
 
                 Log.d("MatchesViewModel matchesByDate", matchesByDate.toString())
 
-                mutableMatches.add(testMatch)
-
                 matchesByDate.forEach { (dateTime, matchesOnDate) ->
                     val matchesToDisable = matchesOnDate.filter { !it.isChecked }
 
@@ -163,6 +132,12 @@ class MatchesViewModel(
                 sendEvent(MatchesScreenUiEvent.SelectDate(selectedDate))
             }
         }
+
+        viewModelScope.launch {
+            dateTimeRepository.observeIs24HourFormat().collect { is24HourFormat ->
+                sendEvent(MatchesScreenUiEvent.ShowTimeFormat(is24HourFormat))
+            }
+        }
     }
 
     private fun sendEvent(event: MatchesScreenUiEvent) {
@@ -171,7 +146,11 @@ class MatchesViewModel(
 
     fun checkFavourite(matchId: Int, dateTime: LocalDateTime, isFavourite: Boolean) {
         viewModelScope.launch {
-            matchRepository.toggleFavouriteSign(matchId = matchId,dateTime = dateTime, isFavourite = isFavourite)
+            matchRepository.toggleFavouriteSign(
+                matchId = matchId,
+                dateTime = dateTime,
+                isFavourite = isFavourite
+            )
         }
     }
 
@@ -185,15 +164,18 @@ class MatchesViewModel(
         override fun reduce(oldState: MatchesScreenState, event: MatchesScreenUiEvent) {
             when (event) {
                 is MatchesScreenUiEvent.ShowMatchesList -> {
-                    setState(oldState.copy(matches = event.matches))
+                    setState(oldState.copy(isLoading = false, matches = event.matches))
                 }
 
                 is MatchesScreenUiEvent.ShowDates -> {
                     setState(oldState.copy(dates = event.dates))
                 }
 
+                is MatchesScreenUiEvent.ShowTimeFormat -> {
+                    setState(oldState.copy(is24HourFormat = event.is24HourFormat))
+                }
                 is MatchesScreenUiEvent.SelectDate -> {
-                    setState(oldState.copy(selectedDate = event.date))
+                    setState(oldState.copy(isLoading = true, selectedDate = event.date))
                 }
 
                 else -> {}

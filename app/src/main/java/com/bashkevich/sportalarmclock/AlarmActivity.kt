@@ -11,22 +11,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.bashkevich.sportalarmclock.screens.alarm.AlarmScreen
+import com.bashkevich.sportalarmclock.screens.alarm.AlarmScreenNew
+import com.bashkevich.sportalarmclock.screens.alarm.AlarmViewModel
 import com.bashkevich.sportalarmclock.ui.theme.SportAlarmClockTheme
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class AlarmActivity : ComponentActivity() {
+    private val alarmViewModel by viewModel<AlarmViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val id = intent.getIntExtra("MATCH_ID",0)
         enableEdgeToEdge()
         setContent {
             SportAlarmClockTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "match id $id",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                AlarmScreen(
+                    viewModel = alarmViewModel
+                )
             }
         }
     }

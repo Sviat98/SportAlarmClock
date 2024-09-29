@@ -78,4 +78,7 @@ class MatchLocalDataSource(
         withContext(Dispatchers.IO) {
             matchDao.removeOldMatches(leagueType = leagueType, season = season, seasonTypes = seasonTypes)
         }
+
+    fun observeMatchById(matchId: Int): Flow<MatchWithTeamsEntity> =
+        matchDao.observeMatchById(matchId = matchId)
 }

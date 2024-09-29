@@ -25,6 +25,7 @@ import com.bashkevich.sportalarmclock.model.team.remote.TeamRemoteDataSource
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepository
 import com.bashkevich.sportalarmclock.model.team.repository.TeamRepositoryImpl
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
+import com.bashkevich.sportalarmclock.screens.alarm.AlarmViewModel
 import com.bashkevich.sportalarmclock.screens.matches.MatchesViewModel
 import com.bashkevich.sportalarmclock.screens.settings.SettingsViewModel
 import com.bashkevich.sportalarmclock.screens.teams.TeamsViewModel
@@ -127,6 +128,7 @@ val alarmModule = module {
     singleOf(::AlarmSchedulerImpl) {
         bind<AlarmScheduler>()
     }
+    viewModelOf(::AlarmViewModel)
 }
 
 val matchModule = module {

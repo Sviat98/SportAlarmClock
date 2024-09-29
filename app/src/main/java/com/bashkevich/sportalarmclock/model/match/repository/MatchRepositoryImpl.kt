@@ -2,6 +2,7 @@ package com.bashkevich.sportalarmclock.model.match.repository
 
 import android.util.Log
 import com.bashkevich.sportalarmclock.model.league.LeagueType
+import com.bashkevich.sportalarmclock.model.match.domain.Match
 import com.bashkevich.sportalarmclock.model.match.domain.toDomain
 import com.bashkevich.sportalarmclock.model.match.local.MatchLocalDataSource
 import com.bashkevich.sportalarmclock.model.match.local.toMatchEntity
@@ -11,6 +12,7 @@ import com.bashkevich.sportalarmclock.model.network.doOnSuccess
 import com.bashkevich.sportalarmclock.model.network.mapSuccess
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.LocalDateTime
 
@@ -24,7 +26,14 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNHLMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
+            .mapSuccess { matches ->
+                matches.filter {
+                    it.status in listOf(
+                        "Scheduled",
+                        "InProgress"
+                    )
+                }
+            }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -51,7 +60,14 @@ class MatchRepositoryImpl(
     ): LoadResult<Unit, Throwable> {
 
         val result = matchRemoteDataSource.fetchMLBMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
+            .mapSuccess { matches ->
+                matches.filter {
+                    it.status in listOf(
+                        "Scheduled",
+                        "InProgress"
+                    )
+                }
+            }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -77,7 +93,14 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNBAMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") } }
+            .mapSuccess { matches ->
+                matches.filter {
+                    it.status in listOf(
+                        "Scheduled",
+                        "InProgress"
+                    )
+                }
+            }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -103,7 +126,14 @@ class MatchRepositoryImpl(
         seasonType: SeasonType
     ): LoadResult<Unit, Throwable> {
         val result = matchRemoteDataSource.fetchNFLMatches(season = season, seasonType = seasonType)
-            .mapSuccess { matches -> matches.filter { it.status in listOf("Scheduled","InProgress") && it.id != null} }
+            .mapSuccess { matches ->
+                matches.filter {
+                    it.status in listOf(
+                        "Scheduled",
+                        "InProgress"
+                    ) && it.id != null
+                }
+            }
             .mapSuccess { matches ->
                 matches.map {
                     it.toMatchEntity(
@@ -134,8 +164,19 @@ class MatchRepositoryImpl(
                 matchEntities.map { it.toDomain() }
             }
 
-    override suspend fun toggleFavouriteSign(matchId: Int,dateTime: LocalDateTime, isFavourite: Boolean) {
-        matchLocalDataSource.toggleFavouriteSign(matchId = matchId,dateTime = dateTime, isFavourite = isFavourite)
+    override fun observeMatchById(matchId: Int): Flow<Match> =
+        matchLocalDataSource.observeMatchById(matchId).map { it.toDomain() }
+
+    override suspend fun toggleFavouriteSign(
+        matchId: Int,
+        dateTime: LocalDateTime,
+        isFavourite: Boolean
+    ) {
+        matchLocalDataSource.toggleFavouriteSign(
+            matchId = matchId,
+            dateTime = dateTime,
+            isFavourite = isFavourite
+        )
     }
 
     override suspend fun removeOldMatches(

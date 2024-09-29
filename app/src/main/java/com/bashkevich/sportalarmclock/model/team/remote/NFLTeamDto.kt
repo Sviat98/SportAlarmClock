@@ -11,6 +11,10 @@ data class NFLTeamDto(
     val city: String,
     @SerialName(value = "Name")
     val name: String,
+    @SerialName(value = "PrimaryColor")
+    val primaryColor: String?,
+    @SerialName(value = "SecondaryColor")
+    val secondaryColor: String?,
     @SerialName(value = "StadiumID")
     val stadiumId: Int?,
     @SerialName(value = "WikipediaLogoUrl")
