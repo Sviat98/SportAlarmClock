@@ -15,7 +15,7 @@ import kotlinx.datetime.toLocalDateTime
 @Immutable
 sealed class MatchesScreenUiEvent : UiEvent {
     class ShowMatchesList(val matches: List<Match>) : MatchesScreenUiEvent()
-    class ShowDates(val dates: List<LocalDate>) : MatchesScreenUiEvent()
+    class ShowDates(val dates: List<Pair<LocalDate,Boolean>>) : MatchesScreenUiEvent()
     class ShowTimeFormat(val is24HourFormat: Boolean) : MatchesScreenUiEvent()
     class SelectDate(val date: LocalDate) : MatchesScreenUiEvent()
 }
@@ -23,7 +23,7 @@ sealed class MatchesScreenUiEvent : UiEvent {
 @Immutable
 data class MatchesScreenState(
     val isLoading: Boolean,
-    val dates: List<LocalDate>,
+    val dates: List<Pair<LocalDate,Boolean>>,
     val selectedDate: LocalDate,
     val is24HourFormat: Boolean,
     val matches: List<Match>,

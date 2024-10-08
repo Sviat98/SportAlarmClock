@@ -15,6 +15,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import android.text.format.DateFormat;
+import com.bashkevich.sportalarmclock.model.datetime.WESTERN_AMERICA_TIME_ZONE
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.minus
 
 class DateTimeLocalDataSource(
     private val appContext: Context
@@ -58,6 +63,24 @@ class DateTimeLocalDataSource(
         while (true){
             emit(Clock.System.now().toLocalDateTime(timeZone).date)
             Log.d("currentSystemDate","${Clock.System.now().toLocalDateTime(timeZone).date}")
+            delay(60000L)
+        }
+    }
+
+    fun observeCurrentPacificSystemDate() : Flow<LocalDate> = flow {
+        while (true){
+            emit(Clock.System.now().toLocalDateTime(TimeZone.of(WESTERN_AMERICA_TIME_ZONE)).date)
+            Log.d("currentSystemDate","${Clock.System.now().toLocalDateTime(TimeZone.of(WESTERN_AMERICA_TIME_ZONE)).date}")
+            delay(60000L)
+        }
+    }
+
+    fun observeCurrentDateTimeMinusHour(timeZone: TimeZone): Flow<LocalDateTime> = flow {
+        while (true){
+            val localDateTimeMinusHour = Clock.System.now().minus(1, DateTimeUnit.HOUR).toLocalDateTime(timeZone)
+
+            emit(LocalDateTime(localDateTimeMinusHour.date, LocalTime(localDateTimeMinusHour.hour,0,0)))
+            Log.d("currentSystemDate","${Clock.System.now().toLocalDateTime(TimeZone.of(WESTERN_AMERICA_TIME_ZONE)).date}")
             delay(60000L)
         }
     }

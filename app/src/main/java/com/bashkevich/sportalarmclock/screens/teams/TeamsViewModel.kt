@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -26,7 +27,7 @@ class TeamsViewModel(
     init {
 
         viewModelScope.launch {
-            settingsRepository.observeLeaguesList().flatMapLatest { leagues->
+            settingsRepository.observeSettingsData().map { it.leagueList }.flatMapLatest { leagues->
                 teamRepository.observeTeamsByLeagues(leagues).distinctUntilChanged()
             }.collect{ teams->
                 sendEvent(TeamsScreenUiEvent.ShowTeamsList(teams))

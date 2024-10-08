@@ -9,8 +9,7 @@ import com.bashkevich.sportalarmclock.mvi.UiState
 
 @Immutable
 sealed class SettingsScreenUiEvent : UiEvent {
-    class ShowLeaguesList(val leagueTypes: List<LeagueType>) : SettingsScreenUiEvent()
-    class ShowTeamsMode(val teamsMode: TeamsMode) : SettingsScreenUiEvent()
+    class ShowSettingsData(val leagueTypes: List<LeagueType>,val teamsMode: TeamsMode) : SettingsScreenUiEvent()
 }
 
 @Immutable

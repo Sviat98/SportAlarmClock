@@ -99,7 +99,8 @@ fun MatchesScreen(
         }
     )
 
-    val dates = state.dates
+    val dateItems = state.dates
+    val dates = state.dates.map { it.first }
 
     val selectedDate = state.selectedDate
 
@@ -140,7 +141,8 @@ fun MatchesScreen(
                 selectedTabIndex = selectedTabIndex,
                 edgePadding = 4.dp
             ) {
-                dates.forEachIndexed { index, currentTab ->
+                dateItems.forEachIndexed { index, dateItem ->
+                    val currentTab = dateItem.first
                     Tab(
                         selected = selectedTabIndex == index,
                         selectedContentColor = MaterialTheme.colorScheme.primary,
@@ -155,7 +157,7 @@ fun MatchesScreen(
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Text(text = currentTab.dayOfWeek.toString().substring(0, 3))
+                                Text(text = if (dateItem.second) "TODAY" else currentTab.dayOfWeek.toString().substring(0, 3))
                                 Text(
                                     text = "${
                                         currentTab.dayOfMonth.toString().padStart(2, '0')

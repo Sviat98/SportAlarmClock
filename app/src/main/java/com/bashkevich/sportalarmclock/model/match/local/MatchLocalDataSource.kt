@@ -2,7 +2,7 @@ package com.bashkevich.sportalarmclock.model.match.local
 
 import android.util.Log
 import com.bashkevich.sportalarmclock.alarm.AlarmScheduler
-import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
+import com.bashkevich.sportalarmclock.model.datetime.EASTERN_AMERICA_TIME_ZONE
 import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.season.SeasonType
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
@@ -10,6 +10,7 @@ import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDateTime
@@ -38,11 +39,11 @@ class MatchLocalDataSource(
         teamsMode: TeamsMode
     ): Flow<List<MatchWithTeamsEntity>> {
 
-        val dateEnd = date.toInstant(TimeZone.of(AMERICAN_TIME_ZONE)).plus(
+        val dateEnd = date.toInstant(TimeZone.of(EASTERN_AMERICA_TIME_ZONE)).plus(
             DateTimePeriod(hours = 23, minutes = 59, seconds = 59), TimeZone.of(
-                AMERICAN_TIME_ZONE
+                EASTERN_AMERICA_TIME_ZONE
             )
-        ).toLocalDateTime(TimeZone.of(AMERICAN_TIME_ZONE))
+        ).toLocalDateTime(TimeZone.of(EASTERN_AMERICA_TIME_ZONE))
 
         Log.d("MatchLocalDataSource dates","$date $dateEnd")
         return matchDao.getAllMatchesByDate(
@@ -59,7 +60,7 @@ class MatchLocalDataSource(
                     true
                 }
             }
-        }
+        }.onEach {  }
 
     }
 

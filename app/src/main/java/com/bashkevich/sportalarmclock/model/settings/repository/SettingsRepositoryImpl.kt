@@ -1,6 +1,7 @@
 package com.bashkevich.sportalarmclock.model.settings.repository
 
 import com.bashkevich.sportalarmclock.model.league.LeagueType
+import com.bashkevich.sportalarmclock.model.settings.domain.SettingsData
 import com.bashkevich.sportalarmclock.model.settings.domain.TeamsMode
 import com.bashkevich.sportalarmclock.model.settings.local.SettingsLocalDataSource
 import kotlinx.coroutines.flow.Flow
@@ -12,12 +13,10 @@ class SettingsRepositoryImpl(
         settingsLocalDataSource.setLeaguesList(leagueTypes)
     }
 
-    override fun observeLeaguesList(): Flow<List<LeagueType>> =
-        settingsLocalDataSource.observeLeaguesList()
+    override fun observeSettingsData(): Flow<SettingsData> =
+        settingsLocalDataSource.observeSettingsData()
 
     override suspend fun setTeamsMode(teamsMode: TeamsMode) {
         settingsLocalDataSource.setTeamsMode(teamsMode)
     }
-
-    override fun observeTeamsMode(): Flow<TeamsMode> = settingsLocalDataSource.observeTeamsMode()
 }

@@ -5,9 +5,11 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
-const val AMERICAN_TIME_ZONE = "America/New_York"
+const val EASTERN_AMERICA_TIME_ZONE = "America/New_York"
 
-fun LocalDateTime.convertFromAmericanTimeZone() =
-    this.toInstant(TimeZone.of(AMERICAN_TIME_ZONE)).toLocalDateTime(
+const val WESTERN_AMERICA_TIME_ZONE = "America/Los_Angeles"
+
+fun LocalDateTime.convertFromEasternAmericaTimeZone() =
+    this.toInstant(TimeZone.of(EASTERN_AMERICA_TIME_ZONE)).toLocalDateTime(
         TimeZone.currentSystemDefault()
     )

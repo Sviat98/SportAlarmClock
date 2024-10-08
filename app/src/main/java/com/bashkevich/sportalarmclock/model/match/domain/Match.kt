@@ -1,6 +1,6 @@
 package com.bashkevich.sportalarmclock.model.match.domain
 
-import com.bashkevich.sportalarmclock.model.datetime.convertFromAmericanTimeZone
+import com.bashkevich.sportalarmclock.model.datetime.convertFromEasternAmericaTimeZone
 import com.bashkevich.sportalarmclock.model.league.LeagueType
 import com.bashkevich.sportalarmclock.model.match.local.MatchWithTeamsEntity
 import com.bashkevich.sportalarmclock.model.season.SeasonType
@@ -25,7 +25,7 @@ fun MatchWithTeamsEntity.toDomain() = Match(
     seasonType = matchWithFavouriteSignEntity.matchEntity.seasonType,
     homeTeam = homeTeamEntity.toDomain(),
     awayTeam = awayTeamEntity.toDomain(),
-    dateTime = matchWithFavouriteSignEntity.matchEntity.dateTime.convertFromAmericanTimeZone(),
+    dateTime = matchWithFavouriteSignEntity.matchEntity.dateTime.convertFromEasternAmericaTimeZone(),
     isChecked = matchWithFavouriteSignEntity.favouriteMatchEntity.isFavourite,
     isAbleToAlarm = true
 )

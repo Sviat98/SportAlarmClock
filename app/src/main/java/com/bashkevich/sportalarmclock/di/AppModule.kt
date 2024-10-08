@@ -27,6 +27,8 @@ import com.bashkevich.sportalarmclock.model.team.repository.TeamRepositoryImpl
 import com.bashkevich.sportalarmclock.model.worker.SportAlarmWorker
 import com.bashkevich.sportalarmclock.screens.alarm.AlarmViewModel
 import com.bashkevich.sportalarmclock.screens.matches.MatchesViewModel
+import com.bashkevich.sportalarmclock.screens.matches.domain.GetDatesUseCase
+import com.bashkevich.sportalarmclock.screens.matches.domain.GetMatchesUseCase
 import com.bashkevich.sportalarmclock.screens.settings.SettingsViewModel
 import com.bashkevich.sportalarmclock.screens.teams.TeamsViewModel
 import io.ktor.client.HttpClient
@@ -137,6 +139,7 @@ val matchModule = module {
     singleOf(::MatchRepositoryImpl) {
         bind<MatchRepository>()
     }
+    singleOf(::GetMatchesUseCase)
     viewModelOf(::MatchesViewModel)
 }
 
@@ -160,4 +163,5 @@ val dateTimeModule = module {
     singleOf(::DateTimeRepositoryImpl) {
         bind<DateTimeRepository>()
     }
+    singleOf(::GetDatesUseCase)
 }

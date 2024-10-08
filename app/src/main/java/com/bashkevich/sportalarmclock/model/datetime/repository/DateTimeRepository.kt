@@ -10,4 +10,6 @@ interface DateTimeRepository {
     fun selectDate(date: LocalDate)
     fun observeCurrentSystemDate(timeZone: TimeZone): Flow<LocalDate>
     fun observeIs24HourFormat(): Flow<Boolean>
+    fun observeCurrentPacificSystemDate(): Flow<LocalDate>
+    fun observeCurrentDateTimeMinusHour(timeZone: TimeZone): Any
 }

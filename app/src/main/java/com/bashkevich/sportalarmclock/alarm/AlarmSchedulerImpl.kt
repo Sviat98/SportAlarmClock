@@ -5,9 +5,6 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import com.bashkevich.sportalarmclock.model.datetime.AMERICAN_TIME_ZONE
-import com.bashkevich.sportalarmclock.model.datetime.convertFromAmericanTimeZone
-import com.bashkevich.sportalarmclock.model.match.domain.Match
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant

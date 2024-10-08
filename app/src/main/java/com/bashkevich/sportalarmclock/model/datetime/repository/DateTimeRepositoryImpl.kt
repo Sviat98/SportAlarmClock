@@ -25,4 +25,8 @@ class DateTimeRepositoryImpl(
     }
 
     override fun observeCurrentSystemDate(timeZone: TimeZone) = dateTimeLocalDataSource.observeCurrentSystemDate(timeZone = timeZone)
+
+    override fun observeCurrentDateTimeMinusHour(timeZone: TimeZone) = dateTimeLocalDataSource.observeCurrentDateTimeMinusHour(timeZone = timeZone)
+
+    override fun observeCurrentPacificSystemDate() = dateTimeLocalDataSource.observeCurrentPacificSystemDate()
 }
