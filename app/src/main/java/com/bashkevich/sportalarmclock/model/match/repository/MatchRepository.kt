@@ -15,7 +15,8 @@ interface MatchRepository {
     suspend fun fetchAllNFLMatches(season: Int, seasonType: SeasonType): LoadResult<Unit, Throwable>
 
     fun observeMatchesByDate(
-        date: LocalDateTime,
+        dateTimeBegin: LocalDateTime,
+        dateTimeEnd: LocalDateTime,
         leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
     ): Flow<List<Match>>

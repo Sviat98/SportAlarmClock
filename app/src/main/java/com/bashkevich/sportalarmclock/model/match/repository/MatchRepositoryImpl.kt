@@ -155,11 +155,12 @@ class MatchRepositoryImpl(
     }
 
     override fun observeMatchesByDate(
-        date: LocalDateTime,
+        dateTimeBegin: LocalDateTime,
+        dateTimeEnd: LocalDateTime,
         leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
-    ) =
-        matchLocalDataSource.observeMatchesByDate(date, leaguesList, teamsMode)
+    ): Flow<List<Match>> =
+        matchLocalDataSource.observeMatchesByDate(dateTimeBegin,dateTimeEnd, leaguesList, teamsMode)
             .map { matchEntities ->
                 matchEntities.map { it.toDomain() }
             }

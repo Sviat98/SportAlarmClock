@@ -13,3 +13,8 @@ fun LocalDateTime.convertFromEasternAmericaTimeZone() =
     this.toInstant(TimeZone.of(EASTERN_AMERICA_TIME_ZONE)).toLocalDateTime(
         TimeZone.currentSystemDefault()
     )
+
+fun LocalDateTime.convertToEasternAmericaTimeZone() =
+    this.toInstant(TimeZone.currentSystemDefault()).toLocalDateTime(
+        TimeZone.of(EASTERN_AMERICA_TIME_ZONE)
+    )

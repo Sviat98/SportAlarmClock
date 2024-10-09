@@ -2,6 +2,7 @@ package com.bashkevich.sportalarmclock.model.datetime.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 
 interface DateTimeRepository {
@@ -11,5 +12,5 @@ interface DateTimeRepository {
     fun observeCurrentSystemDate(timeZone: TimeZone): Flow<LocalDate>
     fun observeIs24HourFormat(): Flow<Boolean>
     fun observeCurrentPacificSystemDate(): Flow<LocalDate>
-    fun observeCurrentDateTimeMinusHour(timeZone: TimeZone): Any
+    fun observeCurrentDateTimeMinusHour(timeZone: TimeZone): Flow<LocalDateTime>
 }

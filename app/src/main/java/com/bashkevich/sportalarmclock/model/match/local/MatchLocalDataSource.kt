@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.DateTimePeriod
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.atStartOfDayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
@@ -34,22 +36,19 @@ class MatchLocalDataSource(
         }
 
     fun observeMatchesByDate(
-        date: LocalDateTime,
+        dateTimeBegin: LocalDateTime,
+        dateTimeEnd: LocalDateTime,
         leaguesList: List<LeagueType>,
         teamsMode: TeamsMode
     ): Flow<List<MatchWithTeamsEntity>> {
 
-        val dateEnd = date.toInstant(TimeZone.of(EASTERN_AMERICA_TIME_ZONE)).plus(
-            DateTimePeriod(hours = 23, minutes = 59, seconds = 59), TimeZone.of(
-                EASTERN_AMERICA_TIME_ZONE
-            )
-        ).toLocalDateTime(TimeZone.of(EASTERN_AMERICA_TIME_ZONE))
 
-        Log.d("MatchLocalDataSource dates","$date $dateEnd")
+
+        Log.d("MatchLocalDataSource dates","$dateTimeBegin $dateTimeEnd")
         return matchDao.getAllMatchesByDate(
             leaguesList = leaguesList,
-            dateBegin = date,
-            dateEnd = dateEnd
+            dateBegin = dateTimeBegin,
+            dateEnd = dateTimeEnd
         ).map { matches ->
             Log.d("MatchLocalDataSource matches",matches.toString())
 

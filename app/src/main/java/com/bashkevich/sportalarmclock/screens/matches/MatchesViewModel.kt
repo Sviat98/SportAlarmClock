@@ -40,8 +40,6 @@ class MatchesViewModel(
                 Log.d("MatchesViewModel observe dates", "$dates")
 
                 sendEvent(MatchesScreenUiEvent.ShowDates(dates = dates))
-
-
             }
         }
 
